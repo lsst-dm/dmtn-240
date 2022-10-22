@@ -21,6 +21,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install "lander<2.0.0"
+          python -m pip install pyyaml
+
+      - name: Compile author list
+        run: |
+          make authors.tex
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -38,4 +43,4 @@ jobs:
           LTD_PASSWORD: ${{ secrets.LTD_PASSWORD }}
           LTD_USERNAME: ${{ secrets.LTD_USERNAME }}
         run: |
-          lander --upload --pdf DMTN-240.pdf --lsstdoc DMTN-240.tex --ltd-product dmtn-240
+          lander --upload --pdf I08.pdf --lsstdoc I08.tex  --extra-download I08-slides.pdf  --ltd-product dmtn-240

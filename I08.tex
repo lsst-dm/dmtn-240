@@ -1,0 +1,76 @@
+\documentclass[11pt,twoside]{article}
+
+% Do NOT use ANY packages other than asp2014.
+\usepackage{asp2014}
+
+\aspSuppressVolSlug
+\resetcounters
+
+% References must all use BibTeX entries in a .bibfile.
+% References must be cited in the text using \citet{} or \citep{}.
+% Do not use \cite{}.
+% See ManuscriptInstructions.pdf for more details
+\bibliographystyle{asp2014}
+
+
+% The ``markboth'' line sets up the running heads for the paper.
+% 1 author: "Surname"
+% 2 authors: "Surname1 and Surname2"
+% 3 authors: "Surname1, Surname2, and Surname3"
+% >3 authors: "Surname1 et al."
+% Replace ``Short Title'' with the actual paper title, shortened if necessary.
+% Use mixed case type for the shortened title
+% Ensure shortened title does not cause an overfull hbox LaTeX error
+% See ASPmanual2010.pdf 2.1.4  and ManuscriptInstructions.pdf for more details
+\markboth{O'Mullane et al.}{Rubin Software Architecture and Design}
+
+\begin{document}
+%\ssindex{protocols!TAP}
+%\ssindex{protocols!GKE}
+%\ssindex{protocols!GCP}
+%\ssindex{observatories!ground-based!Rubin}
+
+\title{Software Architecture and System Design of Rubin Observatory}
+
+% Note the position of the comma between the author name and the
+% affiliation number.
+% Authors surnames should come after first names or initials, eg John Smith, or J. Smith.
+% Author names should be separated by commas.
+% The final author should be preceded by "and".
+% Affiliations should not be repeated across multiple \affil commands. If several
+% authors share an affiliation this should be in a single \affil which can then
+% be referenced for several author names. If only one affiliation, no footnotes are needed.
+% See ManuscriptInstructions.pdf and ASP's manual2010.pdf 3.1.4 for more details
+
+%% Regenerate using:
+%%    python $LSST_TEXMF_DIR/bin/db2authors.py > authors.tex
+
+
+\input{authors}
+% Yes they said to have these index commands commented out.
+%\aindex{O'Mullane,William}
+%\aindex{Economou,Frossie}
+%\aindex{Sick,Jonathan}
+%\aindex{Lim,Kian-Tat}
+%\aindex{Mueller,Fritz}
+%\aindex{Jenness,Tim}
+%\aindex{Krughoff,K.~Simon}
+%\aindex{Guy,Leanne~P.}
+%\aindex{Dubois-Felsmann,Gregory~P.}
+
+
+\begin{abstract}
+This paper covers some astronomy design patterns and perhaps some anti-patterns in astronomy. We will use our experience on several long projects such as Rubin Observatory, Gaia, SDSS,  UKIRT and JCMT to highlight some of the the things which worked and a few things that did not work so well.
+\end{abstract}
+
+%Slides on https://docs.google.com/presentation/d/1xCDWSaBNUEP-YM82K2-doM-yb0AKUGQExratsi3iFdA/edit#slide=id.g144caede871_0_0
+\section{Introduction}
+
+The Legacy Survey of Space and Time \citep{2019ApJ...873..111I} is "deep fast wide" optical/near-IR survey of half the sky in ugrizy bands to r 27.5 (36 nJy) based on 825 visits over a 10-year period.
+Carried out by Rubin Observatory on Cerro Pach\'{o}n Chile, the survey will produce around 100\,PB of data consisting of about a billion 16\,Mpix images, enabling measurements for 40 billion objects!
+
+This paper describes
+
+
+\bibliography{I08}
+\end{document}
