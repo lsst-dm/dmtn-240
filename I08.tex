@@ -7,9 +7,6 @@
 \aspSuppressVolSlug
 \resetcounters
 
-% References must all use BibTeX entries in a .bibfile.
-% References must be cited in the text using \citet{} or \citep{}.
-% Do not use \cite{}.
 % See ManuscriptInstructions.pdf for more details
 \bibliographystyle{asp2014}
 
@@ -48,16 +45,6 @@
 
 
 \input{authors}
-% Yes they said to have these index commands commented out.
-%\aindex{O'Mullane,William}
-%\aindex{Economou,Frossie}
-%\aindex{Sick,Jonathan}
-%\aindex{Lim,Kian-Tat}
-%\aindex{Mueller,Fritz}
-%\aindex{Jenness,Tim}
-%\aindex{Krughoff,K.~Simon}
-%\aindex{Guy,Leanne~P.}
-%\aindex{Dubois-Felsmann,Gregory~P.}
 
 
 \begin{abstract}
@@ -68,10 +55,68 @@ This paper covers some astronomy design patterns and perhaps some anti-patterns 
 \section{Introduction}
 
 The Legacy Survey of Space and Time \citep{2019ApJ...873..111I} is "deep fast wide" optical/near-IR survey of half the sky in ugrizy bands to r 27.5 (36 nJy) based on 825 visits over a 10-year period.
-Carried out by Rubin Observatory on Cerro Pach\'{o}n Chile, the survey will produce around 100\,PB of data consisting of about a billion 16\,Mpix images, enabling measurements for 40 billion objects!
+Carried out by Rubin Observatory on Cerro Pach\'{o}n (alt. 2647m) Chile, the survey will produce around 100\,PB of data consisting of about a billion 16\,Mpix images, enabling measurements for 40 billion objects!
+The observatory is due to go into operations in 2024.
+The telescope mount assembly is due to be handed over by the end of 2022.
+In 2023 the mirrors should be mounted with the commissioning camera (a single raft or about 5\% of the full camera size) to perform verification of the system.
+We already routinely operate the Auxiliary telescope as both an imager and spectrograph, the later being its purpose in operations as a calibration aid. For a regularly updated key milestones see \citep{DMTN-232}.
 
-This paper describes
+This paper briefly describes our software design and architecture and provides some details on decisions made.
 
+\section{System Vision}
+The mission statement for Rubin Data Management is :
+\begin{quote}
+Stand up operable, maintainable, quality services to deliver high-quality LSST data products for science and education, all on time and within reasonable cost.
+
+\end{quote}
+
+Rubin Observatory will snap an image approximately every 40s (slew and settle + 30s exposure time).
+This leads to around 20TB of images streaming off the mountain in Chile each night.
+The 100Gbs network from Chile to the USA was an early investment of the project which is now finally in place (though the redundant link still has some pending work).
+Using this network Rubin Data Management must get the images to SLAC within seven seconds.
+Once at SLAC prompt processing commences, after year one this will include regular alerts within 60s of shutter close (see Section \ref{sec:prompt}).
+After 80 hours images will be available to the data rights holders (see \citep{RDO-011} for more on data releases).
+On a more or less annual cadence DM will reprocess all the images taken since the start of operations and release new catalogs and other products as defined in \citet{LSE-163} (see Section \ref{sec:DRP}.
+
+
+\subsection{Democratizing research in astronomy}
+
+We feel open source software is key to open science: not just for traditional reproducibility arguments, but because it is a step toward inclusivity.
+Being open is not enough though, we must also find ways to support researchers who are:
+
+\begin{itemize}
+\item Resource-poor (do not have the compute resources associated with major research universities)
+\item Time-poor (have a high teaching load, few/no grad students or postdocs)
+\item Work in liberal arts colleges, historically black colleges, or other places that lack a large peer network for technical and research support
+
+\end{itemize}
+
+Lowering the barrier to entry goes beyond data rights and even beyond software; it requires minimizing the investment (time, money, experience) necessary to meaningfully engage with the scientific questions that can be resolved with the data
+
+As we move to operations we wish to provide a quality experience to all of our users.
+The Science Platform provides a level playing field for interacting with Rubin data.
+You do need an internet connection and a browser but the load is all on our server side hence your institute does not need to have a super computer to allow sophisticated experimentation.
+
+
+
+\section{Architecture}
+ Figure \ref{fig:arch} shows a simplified view of the system architecture, the full details are publicly available in \citep{LDM-148}.
+
+
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=\textwidth]{I08_f1.eps }
+	\caption{ Simplified  Vera C. Rubin Architecture diagram from Magic Draw \label{fig:arch}}
+\end{centering}
+\end{figure}
+
+\subsection{Data Release Processing}\label{sec:DRP}
+\subsection{Prompt Processing} \label{sec:prompt}
+
+
+\section{Lessons learned}
+Some of the software best practices are given in \citet{2018SPIE10707E..09J}.
 
 \bibliography{I08}
 \end{document}
