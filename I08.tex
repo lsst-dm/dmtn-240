@@ -56,9 +56,11 @@ This paper covers some astronomy design patterns and perhaps some anti-patterns 
 
 The Legacy Survey of Space and Time \citep{2019ApJ...873..111I} is "deep fast wide" optical/near-IR survey of half the sky in ugrizy bands to r 27.5 (36 nJy) based on 825 visits over a 10-year period.
 Carried out by Rubin Observatory on Cerro Pach\'{o}n (alt. 2647m) Chile, the survey will produce around 100\,PB of data consisting of about a billion 16\,Mpix images, enabling measurements for 40 billion objects!
+
 The observatory is due to go into operations in 2024.
 The telescope mount assembly is due to be handed over by the end of 2022.
 In 2023 the mirrors should be mounted with the commissioning camera (a single raft or about 5\% of the full camera size) to perform verification of the system.
+
 We already routinely operate the Auxiliary telescope as both an imager and spectrograph, the later being its purpose in operations as a calibration aid. For a regularly updated key milestones see \citep{DMTN-232}.
 
 This paper briefly describes our software design and architecture and provides some details on decisions made.
@@ -76,7 +78,11 @@ The 100Gbs network from Chile to the USA was an early investment of the project 
 Using this network Rubin Data Management must get the images to SLAC within seven seconds.
 Once at SLAC prompt processing commences, after year one this will include regular alerts within 60s of shutter close (see Section \ref{sec:prompt}).
 After 80 hours images will be available to the data rights holders (see \citep{RDO-011} for more on data releases).
-On a more or less annual cadence DM will reprocess all the images taken since the start of operations and release new catalogs and other products as defined in \citet{LSE-163} (see Section \ref{sec:DRP}.
+On a more or less annual cadence DM will reprocess all the images taken since the start of operations and release new catalogs and other products as defined in \citet{LSE-163} (see Section \ref{sec:DRP}).
+
+Rubin’s LSST is not the first wide-field imaging survey but the combination of depth, area, and throughput make it uniquely challenging.
+Everything is blended and many measurements are systematics limited, but
+we are already testing  on precursors like Hyper Subprime Cam (HSC).
 
 
 \subsection{Democratizing research in astronomy}
@@ -91,7 +97,8 @@ Being open is not enough though, we must also find ways to support researchers w
 
 \end{itemize}
 
-Lowering the barrier to entry goes beyond data rights and even beyond software; it requires minimizing the investment (time, money, experience) necessary to meaningfully engage with the scientific questions that can be resolved with the data
+Lowering the barrier to entry goes beyond data rights and even beyond software; it requires minimizing the investment (time, money, experience) necessary to meaningfully engage with the scientific questions that can be resolved with the data.
+
 
 As we move to operations we wish to provide a quality experience to all of our users.
 The Science Platform provides a level playing field for interacting with Rubin data.
@@ -100,21 +107,41 @@ You do need an internet connection and a browser but the load is all on our serv
 
 
 \section{Architecture}
- Figure \ref{fig:arch} shows a simplified view of the system architecture, the full details are publicly available in \citep{LDM-148}.
+ Figure \ref{fig:arch} shows a simplified view of the system architecture, the full details are publicly available in \citep{LDM-148}. All the DM code is available on github at \url{https://github.com/lsst}.
 
 
-
-%\begin{figure}
 \begin{centering}
 \articlefigure{I08_f1.eps}{fig:arch}{ Simplified  Vera C. Rubin Architecture diagram from Magic Draw \label{fig:arch}}
-%\includegraphics[width=\textwidth]{./I08_f1.eps }
-%	\caption{ Simplified  Vera C. Rubin Architecture diagram from Magic Draw \label{fig:arch}}
 \end{centering}
-%\end{figure}
 
-\subsection{Data Release Processing}\label{sec:DRP}
+DM's work commences once the image is read out of the Camera. DM already gathers some information which the Camera software puts in the image header to make a minimally meaningful image.
+As the image is written the Camera software also provides a quick look  of the image.
+Once available the image is written to the Observatory Operations Data Service (OODS) and simultaneously transferred to the US Data Facility (USDF) at SLAC via the Prompt Transfer System. Though we use Rucio for transfers between facilities we could not make it fast enough for the Prompt Transfer which is custom code. We will say a little more about prompt processing in Section \ref{sec:prompt}
+
+On the summit there is a restricted access Science Platform which allows staff to interact with the  images in the OODS directly. A cluster of about 400 cores is available for quick adhoc processing in situ. However we expect most processing to be done at the USDF.
+
 \subsection{Prompt Processing} \label{sec:prompt}
+\subsection{Data Release Processing}\label{sec:DRP}
 
+\subsection{Data Access} \label{sec:dataaccess}
+
+Data rights holders will have access to the catalogs and images via the Science platform.
+The catalogs are large for relational databases.
+While the object catalog at $4 \times 10^{10}$ rows may be manageable
+the source catalog (of all observations) will run to $ 10^{12}$ rows which is beyond conventional relational technology.
+Qserv was built specifically to answer astro queries quickly for large numbers of users.
+We have also tried non relational DBs including Google's BigQuery, Qserv provides the best cost service value for catalog queries (see e.g. \citet{Document-31100}.
+However we see the advantage of non relational technology for
+some  \emph{unpredictable} and \emph{complex} access which Qserv may or may not handle user-defined functions, pattern matching, unusual iteration schemes.
+Many cloud tools work best with cloud formats like parquet.
+So we are considering having parquet files along side Qserv
+
+A subset of data will be public via Education and Public outreach including for citizen science projects.
+Alert stream will be fully public.
+
+We will hold most data at SLAC but run the science platform on Google \citep{2021arXiv211115030O}.
+We choose this Hybrid model since Compute is cheap on the cloud but storage is expensive.
+The ingress is free and the user egress is manageable.
 
 \section{Lessons learned}
 Some of the software best practices are given in \citet{2018SPIE10707E..09J}.
