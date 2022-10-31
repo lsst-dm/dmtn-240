@@ -129,7 +129,7 @@ Data rights holders will have access to the catalogs and images via the Science 
 The catalogs are large for relational databases.
 While the object catalog at $4 \times 10^{10}$ rows may be manageable
 the source catalog (of all observations) will run to $ 10^{12}$ rows which is beyond conventional relational technology.
-Qserv was built specifically to answer astro queries quickly for large numbers of users.
+Qserv \citep{C15_adassxxxii} was built specifically to answer astro queries quickly for large numbers of users.
 We have also tried non relational DBs including Google's BigQuery, Qserv provides the best cost service value for catalog queries (see e.g. \citet{Document-31100}.
 However we see the advantage of non relational technology for
 some  \emph{unpredictable} and \emph{complex} access which Qserv may or may not handle user-defined functions, pattern matching, unusual iteration schemes.
@@ -142,6 +142,11 @@ Alert stream will be fully public.
 We will hold most data at SLAC but run the science platform on Google \citep{2021arXiv211115030O}.
 We choose this Hybrid model since Compute is cheap on the cloud but storage is expensive.
 The ingress is free and the user egress is manageable.
+
+\subsection{Cloud Native}\label{sec:cloudnative}
+Like many projects \citep{2017ASPC..512...33O} Rubin leaned heavily on containers ear;y on.
+We also quickly understood the ned for sophisticated container orchestration and settled on Kubernetes.
+This decsision
 
 \section{Lessons learned}
 Some of the software best practices are given in \citet{2018SPIE10707E..09J}.
