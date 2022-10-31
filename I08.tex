@@ -121,6 +121,21 @@ Once available the image is written to the Observatory Operations Data Service (
 On the summit there is a restricted access Science Platform which allows staff to interact with the  images in the OODS directly. A cluster of about 400 cores is available for quick adhoc processing in situ. However we expect most processing to be done at the USDF.
 
 \subsection{Prompt Processing} \label{sec:prompt}
+The Prompt Processing framework runs at the USDF, though many of the components of the framework will be reused to drive rapid analysis and quick-look functionality at the Summit and test stand facilities.
+The design of Prompt Processing is driven be the requirement that alerts be distributed within 60 seconds of completion of readout of the last exposure of the visit.
+To enable as much I/O and computation as possible to be done in advance, we instantiate one process per CCD when the summit sends a next\_visit Kafka event.
+These next\_visit events providing notice of the telescope pointing, exposure duration, filter selection, and other metadata at least 20 seconds in advance of the first exposure of a visit.
+Upon receiving the next\_visit event, we use knative in a Kubernetes environment to prepare a new container where we connect to the Butler to pre-load reference catalogs, calibration products, templates, solar system ephemerides, and prior alert history.
+Once the raw images corresponding to an earlier next\_visit event for a given detector finish downloading to a local Ceph object store, the images are ingested to the container-local Butler and the Alert Production pipeline payload begins processing.
+Other payloads, such as the Commissioning pipelines or Calibration Products pipelines, can also be run using the framework.
+The Alert Production pipeline produces packaged alerts that are streamed to the Community Brokers, writes all data products to the repository at the USDF with the Butler, and updates the Alert Pipeline Database (APDB) with new measurements.
+Detailed information on the initial design and prototype in the Google Cloud environment can be found in \url{dmtn-219.lsst.io}.
+Figure \ref{fig:pp} provides flow chart for prompt processing.
+
+\begin{centering}
+\articlefigure[width={6cm},angle=-90]{I08_f3.eps}{fig:pp}{ Prompt Processing flow diagram.}
+\end{centering}
+
 \subsection{Data Release Processing}\label{sec:DRP}
 About once per year we will reprocess all data from the start of the survey.
 We wil spend a few months in precursor runs and QA before starting the nine month processing ordeal.
@@ -129,7 +144,7 @@ Work will be distributed from the USDF at SLAC using PanDA.
 Figure \ref{fig:drp} provides an event chart for this.
 
 \begin{centering}
-\articlefigure[width={0.6\textwidth},angle=-90]{I08_f2.eps}{fig:drp}{ DRP event chart from Magic Draw }
+\articlefigure[width={6cm},angle=-90]{I08_f2.eps}{fig:drp}{ DRP event chart from Magic Draw }
 \end{centering}
 
 
