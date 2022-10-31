@@ -157,7 +157,7 @@ This approach has already paid off massive dividends:
 
 Our architectural approach is geared towards lowering the cost for developing and deploying a new data service.
 Services utilize a common infrastructure providing services such as authentication and authorization, secrets management, Transport Layer Security (TLS) certificates, and templates to speed up creation of new services in the FastAPI framework.
-The GitOps infrastructure for k8s deployment using ArgoCD takes care of easy per-infrastructure configuration and deployment.
+The GitOps infrastructure for K8S deployment using ArgoCD takes care of easy per-infrastructure configuration and deployment.
 This is internally named Phalanx.\footnote{\url{http://phalanx.lsst.io/}}
 
 On the summit in Cerro Pachón where we have on prem machines the Chile DevOps team use Foreman and puppet to bring up s full K8S infrastructure.
@@ -269,6 +269,19 @@ Printed out full product trees are impressive to see the amount of work to do an
 Some of the software best practices are given in \citet{2018SPIE10707E..09J}.
 
 \subsection{Deployment}
+As mentioned (Section \ref{sec:cloudnative}) we are cloud native on Rubin.
+Abstracting infrastructure effectively (Kubernetes / container orchestration, middleware etc) facilitates wider adoption of software and services by others, reducing context switching penalty and supporting continuing expertise.
+
+Rubin uses Foreman/Puppet for bare metal setup security injection etc. up to kubernetes. Some machines on the summit are not under kubernetes of course.
+We started late and SLAC were already using Chef and continue to do so - having both of these is unfortunate on one project.
+
+Rubin Docker Hub for containers Kubernetes  for orchestration even  on the summit, ArgoCD is used to deploy everything. The RSP is deployed at eight distinct locations using ArgoCD.
+
+
+Gaia choose Java for portability  (and ease of coding).
+There were no containers but Jars were always deployed from Nexus.
+All configurations for various machines were in SVN  deployment scripts pulled correct versions to a specific machine.
+
 \subsection{Databases}
 Some people love them and some people hate them some of us love them and hate them but datasets are a part of any big system and choosing the correct one is hard.
 We think databases are great for persistence, the ability to query in different ways and relational support for Atomicity, Consistency, Isolation, and Durability(ACID) .
@@ -283,7 +296,27 @@ We use Cassandra for Prompt Products and of course we have in house developed Qs
 On Gaia we had at least Intersystems Cache for processing \cite{2011ExA....31..215O}, Postgres for archive and the dictionary .
 
 \subsection{Open software project management}
-That's an entire book perhaps
+It seems appropriate to mention management here though that could be a topic for a full paper or book of its own.
+In fact many insights may be found in \citet{OMULLANE2005}.
+First we should be clear leadership is required for complex astronomy/software projects not just management.
+Finding good leaders is very hard.
+That requires domain expertise and management training
+We try to help by spreading some management across several people, exposing them to the issues in the large project and ways to deal with them.
+Most importantly provide support to potential managers/leaders.
+One must  acknowledge this route is not for everyone  - experimenting is good but give people a route back in a short timescale if they decide its not all they wanted.
+
+You can do agile but you probably want earned value \citep{2014SPIE.9150E..1EG,2016SPIE.9911E..0NK} to help understand what is being delivered and since NSF etc require it.
+Have good managers who understand both technical and managerial needs, super hard.
+Build a techno/scientific  culture in leadership, again not trivial.
+We should be offering opportunities for getting career credit for supporting the mission and its community, not just first-to-publish.
+
+There are lots of parties and institutes in big projects.
+If you want to do open source put it in the contracts/agreements from the outset.
+Licensing is important - Rubin picked GPL but would now prefer APL - hard to change
+so do not make it TOO explicit in the contracts.
+Create community activity and collaboration around a codebase if you can.
+
+
 
 
 \bibliography{I08}
