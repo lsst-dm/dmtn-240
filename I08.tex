@@ -76,7 +76,7 @@ Rubin Observatory will snap an image approximately every 40s (slew and settle + 
 This leads to around 20TB of images streaming off the mountain in Chile each night.
 The 100Gbs network from Chile to the USA was an early investment of the project which is now finally in place (though the redundant link still has some pending work).
 Using this network Rubin Data Management must get the images to SLAC within seven seconds.
-Once at SLAC prompt processing commences, after year one this will include regular alerts within 60s of shutter close (see Section \ref{sec:prompt}).
+Once at SLAC prompt processing commences see Section \ref{sec:prompt}.
 After 80 hours images will be available to the data rights holders (see \citep{RDO-011} for more on data releases).
 On a more or less annual cadence DM will reprocess all the images taken since the start of operations and release new catalogs and other products as defined in \citet{LSE-163} (see Section \ref{sec:DRP}).
 
@@ -88,7 +88,7 @@ we are already testing  on precursors like Hyper Subprime Cam (HSC).
 \subsection{Democratizing research in astronomy}
 
 We feel open source software is key to open science: not just for traditional reproducibility arguments, but because it is a step toward inclusivity.
-Being open is not enough though, we must also find ways to support researchers who are:
+Open data and software  is not enough, we must find ways to support researchers who are:
 
 \begin{itemize}
 \item Resource-poor (do not have the compute resources associated with major research universities)
@@ -103,7 +103,6 @@ Lowering the barrier to entry goes beyond data rights and even beyond software; 
 As we move to operations we wish to provide a quality experience to all of our users.
 The Science Platform provides a level playing field for interacting with Rubin data.
 You do need an internet connection and a browser but the load is all on our server side hence your institute does not need to have a super computer to allow sophisticated experimentation.
-
 
 
 \section{Architecture}
@@ -133,7 +132,7 @@ Detailed information on the initial design and prototype in the Google Cloud env
 Figure \ref{fig:pp} provides flow chart for prompt processing.
 
 \begin{centering}
-\articlefigure[width={5cm},angle=-90]{I08_f3.eps}{fig:pp}{ Prompt Processing flow diagram.}
+\articlefigure[width={4cm},angle=-90]{I08_f3.eps}{fig:pp}{ Prompt Processing flow diagram.}
 \end{centering}
 
 \subsection{Data Release Processing}\label{sec:DRP}
