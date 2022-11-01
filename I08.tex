@@ -87,8 +87,9 @@ we are already testing  on precursors like Hyper Subprime Cam (HSC).
 
 \subsection{Democratizing research in astronomy}
 
-We feel open source software is key to open science: not just for traditional reproducibility arguments, but because it is a step toward inclusivity.
-Open data and software  is not enough, we must find ways to support researchers who are:
+We feel open source software is key to open science: not just for traditional reproducibility arguments, but because it is a step toward inclusivity as
+open data alone is not enough.
+We must also find ways to support researchers who are:
 
 \begin{itemize}
 \item Resource-poor (do not have the compute resources associated with major research universities)
@@ -97,9 +98,7 @@ Open data and software  is not enough, we must find ways to support researchers 
 
 \end{itemize}
 
-Lowering the barrier to entry goes beyond data rights and even beyond software; it requires minimizing the investment (time, money, experience) necessary to meaningfully engage with the scientific questions that can be resolved with the data.
-
-
+Lowering the barrier to entry  requires minimizing the investment (time, money, experience) necessary to meaningfully engage with the scientific questions that can be resolved with the data.
 As we move to operations we wish to provide a quality experience to all of our users.
 The Science Platform provides a level playing field for interacting with Rubin data.
 You do need an internet connection and a browser but the load is all on our server side hence your institute does not need to have a super computer to allow sophisticated experimentation.
@@ -114,10 +113,13 @@ You do need an internet connection and a browser but the load is all on our serv
 \end{centering}
 
 DM's work commences once the image is read out of the Camera. DM already gathers some information which the Camera software puts in the image header to make a minimally meaningful image.
-As the image is written the Camera software also provides a quick look  of the image.
-Once available the image is written to the Observatory Operations Data Service (OODS) and simultaneously transferred to the US Data Facility (USDF) at SLAC via the Prompt Transfer System. Though we use Rucio for transfers between facilities we could not make it fast enough for the Prompt Transfer which is custom code. We will say a little more about prompt processing in Section \ref{sec:prompt}
+As the data is written the Camera software also provides a quick look  of the image.
+Once available the image is written to the Observatory Operations Data Service (OODS) and simultaneously transferred to the US Data Facility (USDF) at SLAC via the Prompt Transfer System. Though we use Rucio for transfers between facilities we could not make it fast enough for the Prompt Transfer which is custom code.
+We will say a little more about prompt processing in Section \ref{sec:prompt}
 
-On the summit there is a restricted access Science Platform which allows staff to interact with the  images in the OODS directly. A cluster of about 400 cores is available for quick adhoc processing in situ. However we expect most processing to be done at the USDF.
+On the summit there is a restricted access Science Platform which allows staff to interact with the  images in the OODS directly.
+A cluster of about 400 cores is available for quick adhoc processing in situ.
+However we expect most processing to be done at the USDF.
 
 \subsection{Prompt Processing} \label{sec:prompt}
 The Prompt Processing framework runs at the USDF, though many of the components of the framework will be reused to drive rapid analysis and quick-look functionality at the Summit and test stand facilities.
@@ -137,9 +139,8 @@ Figure \ref{fig:pp} provides flow chart for prompt processing.
 
 \subsection{Data Release Processing}\label{sec:DRP}
 About once per year we will reprocess all data from the start of the survey.
-We wil spend a few months in precursor runs and QA before starting the nine month processing ordeal.
-The jobs for this are distributed between France, US and UK.
-Work will be distributed from the USDF at SLAC using PanDA.
+We will spend a few months in precursor runs and QA before starting the nine month processing ordeal.
+The jobs for this are distributed between France, US and UK using PanDA (\url{dmtn-213.lsst.io}.
 Figure \ref{fig:drp} provides an event chart for this.
 
 \begin{centering}
@@ -154,14 +155,14 @@ The catalogs are large for relational databases.
 While the object catalog at $4 \times 10^{10}$ rows may be manageable
 the source catalog (of all observations) will run to $ 10^{12}$ rows which is beyond conventional relational technology.
 Qserv \citep{C15_adassxxxii} was built specifically to answer astro queries quickly for large numbers of users.
-We have also tried non relational DBs including Google's BigQuery, Qserv provides the best cost service value for catalog queries (see e.g. \citet{Document-31100}.
+We have also tried non relational DBs including Google's BigQuery but Qserv provides the best value for catalog queries (see e.g. \citet{Document-31100}.
 However we see the advantage of non relational technology for
 some  \emph{unpredictable} and \emph{complex} access which Qserv may or may not handle user-defined functions, pattern matching, unusual iteration schemes.
-Many cloud tools work best with cloud formats like parquet.
-So we are considering having parquet files along side Qserv
+In fact many cloud tools work best with cloud formats like parquet and
+ we are considering having parquet files along side Qserv for use with Spark or DASK.
 
 A subset of data will be public via Education and Public outreach including for citizen science projects.
-Alert stream will be fully public.
+The Alert stream will be fully public.
 
 We will hold most data at SLAC but run the science platform on Google \citep{2021arXiv211115030O}.
 We choose this Hybrid model since Compute is cheap on the cloud but storage is expensive.
