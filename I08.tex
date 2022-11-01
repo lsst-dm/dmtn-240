@@ -130,7 +130,7 @@ Upon receiving the next\_visit event, we use knative in a Kubernetes environment
 Once the raw images corresponding to an earlier next\_visit event for a given detector finish downloading to a local Ceph object store, the images are ingested to the container-local Butler and the Alert Production pipeline payload begins processing.
 Other payloads, such as the Commissioning pipelines or Calibration Products pipelines, can also be run using the framework.
 The Alert Production pipeline produces packaged alerts that are streamed to the Community Brokers, writes all data products to the repository at the USDF with the Butler, and updates the Alert Pipeline Database (APDB) with new measurements.
-Detailed information on the initial design and prototype in the Google Cloud environment can be found in \url{dmtn-219.lsst.io}.
+Detailed information on the initial design and prototype in the Google Cloud environment can be found in \citet{DMTN-219}.
 Figure \ref{fig:pp} provides flow chart for prompt processing.
 
 \begin{centering}
@@ -140,7 +140,7 @@ Figure \ref{fig:pp} provides flow chart for prompt processing.
 \subsection{Data Release Processing}\label{sec:DRP}
 About once per year we will reprocess all data from the start of the survey.
 We will spend a few months in precursor runs and QA before starting the nine month processing ordeal.
-The jobs for this are distributed between France, US and UK using PanDA (\url{dmtn-213.lsst.io}.
+The jobs for this are distributed between France, US and UK using PanDA \citep{DMTN-213}
 Figure \ref{fig:drp} provides an event chart for this.
 
 \begin{centering}
