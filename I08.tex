@@ -181,14 +181,13 @@ This approach has already paid off massive dividends:
 \end{itemize}
 
 Our architectural approach is geared towards lowering the cost for developing and deploying a new data service.
-Services utilize a common infrastructure providing services such as authentication and authorization, secrets management, Transport Layer Security (TLS) certificates, and templates to speed up creation of new services in the FastAPI framework.
+Services utilize a common infrastructure (Phalanx\footnote{\url{http://phalanx.lsst.io/}}) providing services such as authentication and authorization, secrets management, Transport Layer Security (TLS) certificates, and templates to speed up creation of new services in the FastAPI framework.
 The GitOps infrastructure for K8S deployment using ArgoCD takes care of easy per-infrastructure configuration and deployment.
-This is internally named Phalanx.\footnote{\url{http://phalanx.lsst.io/}}
 
-On the summit in Cerro Pachón where we have on prem machines the Chile DevOps team use Foreman and puppet to bring up s full K8S infrastructure.
+On the summit in Cerro Pachón where we have on prem machines the Chile DevOps team use Foreman and puppet to bring up a full K8S infrastructure.
 Both DM and Telescope and Site software then deploy services on top of this infrastructure.
 Deploying control components on K8S allows for better resilience.
-There are of course some devices this can not be done for some of these are still deployed with puppet but not all.
+There are of course some devices for which this approach does not work.
 
 
 \section{Lessons learned}
@@ -215,9 +214,8 @@ There is a lot of analysis and design to come up with ans architecture - standar
 Undoubtedly tools to support your chosen standards extremely useful in the beginning, later they may become cumbersome. Both Rubin and Gaia started out with Rational Architect and switched at some point to Magic Draw.
 Rubin still maintains a full set of requirements and design elements in Magic Draw while Gaia switched to code as prime and reverse engineers some diagrams for documentation purposes.
 
-For verification  Rubin uses  Jira Test Manager (Zephyr) while for Gaia we used an in house tracking system based on open software.
-Some systematic approach is needed form the outset or this will get away from you quickly.
-Making it as automated as possible is also essential from the outset.
+For verification  Rubin uses  Jira Test Manager \citep{2018SPIE10705E..0US}  while  Gaia  used an in house tracking system based on open software \citep{2012SPIE.8449E..0GC}.
+A systematic and largely automated approach to verification is needed form the outset .
 
 One catch on both projects was to have clearly written and testable requirements, this is extremely difficult and neither project was stellar.
 This may be due to an underestimation of system engineering needs.
@@ -246,7 +244,7 @@ Most Gaia docs used Latex templates provided and were in SVN,  Livelink held PDF
 Metadata in Livelink was curated, not every one was allowed to upload documents.
 
 Rubin developed a documentation infrastructure that further lowers the barrier to documentation by providing templated creation via Slack and uses the same IDE/toolchain developers use for coding, supports Restructured Text/Latex and is published via Github through the well-known GitOps workflow.
-Single page documents (technotes) and site-based documentation (e.g. \url{ pipelines.lsst.io}) share the same infrastructure (see \url{sqr-000.lsst.io}) and search indexing hub (\url{www.lsst.io})
+Single page documents (technotes) and site-based documentation (e.g. \url{ pipelines.lsst.io}) share the same infrastructure \citep{SQR-000} and search indexing hub (\url{www.lsst.io})
 This has also minimizes useful information being consigned in hard to find (e.g. Google docs) and easy to forget or edit in one’s preferred IDE (eg wikis)
 Docushare holds change controlled docs (PDFs, Word) has a search function though everyone has difficulty finding document in it.
 This may be because the metadata is often incomplete or incorrect.
@@ -318,7 +316,7 @@ There is also a mistake often made of trying to use one single database -
 more are better per-application databases, sometimes specialized (Redis, InfluxDB) add resilience and are more manageable nowadays.
 On Rubin we have Influx for summit Engineering, Postgres for observing logs and ancillary info and AlertsDB.
 We use Cassandra for Prompt Products and of course we have in house developed Qserv for catalog access \citep{C15_adassxxxii}.
-On Gaia we had at least Intersystems Cache for processing \cite{2011ExA....31..215O}, Postgres for archive and the dictionary .
+Gaia had at least Intersystems Cache for processing \cite{2011ExA....31..215O}, Postgres for archive and the dictionary .
 
 \subsection{Open software project management}
 It seems appropriate to mention management here though that could be a topic for a full paper or book of its own.
