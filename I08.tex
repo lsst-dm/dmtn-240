@@ -197,7 +197,7 @@ Standards are excellent they minimize the learning curve for new hires which is 
 Gaia used the European Cooperation for Space Standardization (ECSS)\citep{2007arXiv0712.0249O} at ADASS and
  Rubin used Model Based System Engineering (MBSE) \citep{2018SPIE10705E..0US}.
 
-For astronomy we have also have the International Virtual Observatory (IVOA) standards. Gaia archive is full IVOA based \citep{2019ASPC..523..445S,2015scop.confE...8G}. The Sloane Digital Sky Survey (SDSS) implemented and helped define many of the original protocols \citep{2004AAS...20511301T}.
+For astronomy we have also have the International Virtual Observatory (IVOA) standards. Gaia archive is full IVOA based \citep{2019ASPC..523..445S,2015scop.confE...8G}. The Sloan Digital Sky Survey (SDSS) implemented and helped define many of the original protocols \citep{2004AAS...20511301T}.
 Rubin is IVOA first, we implement TAP and  HiPS,
 our Image services implements SODA.
 Rubin uses DataLink to abstract image access from ObsTAP results and it is further utilized within the system i.e. we do not just expose IVOA services we use them internally also.
@@ -214,7 +214,7 @@ Undoubtedly tools to support your chosen standards are extremely useful in the b
 Rubin still maintains a full set of requirements and design elements in Magic Draw while Gaia switched to code as prime and reverse engineers some diagrams for documentation purposes.
 
 For verification  Rubin uses  Jira Test Manager \citep{2018SPIE10705E..0US}  while  Gaia  used an in house system based on open software \citep{2012SPIE.8449E..0GC}.
-A systematic and largely automated approach to verification is needed form the outset .
+A systematic and largely automated approach to verification is needed from the outset.
 
 One catch on both projects was to have clearly written and testable requirements, this is extremely difficult and neither project was stellar.
 We can easily fall in the trap of assuming that all agree on vague statements or requirements when usually a little delving will show quite the opposite.
@@ -222,7 +222,7 @@ It is worth putting effort in early to write down in detail and as precisely as 
 This requires system engineering which is often underestimated.
 
 
-However you do your initial breakdown is possibly immaterial they all work and you will inevitably end up with $7 \pm 2$ subsystems.
+How you do your initial breakdown is possibly immaterial, they all work and you will inevitably end up with $7 \pm 2$ subsystems.
 You will end up with a a range of client server, model view controller, tiers, pipes and filters etc.
 Frequently large projects start all subsystems together but
 a slower ramp up is better in some cases, start subsystems when needed, admittedly it is  hard to keep politics out of that sort of decision.
