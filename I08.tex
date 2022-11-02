@@ -172,7 +172,7 @@ The ingress is free and the user egress is manageable.
 Like many projects \citep{2017ASPC..512...33O} Rubin leaned heavily on containers early on.
 We also quickly understood the need for sophisticated container orchestration and settled on Kubernetes.
 This decision drove service architectures that are well isolated from the underlying infrastructure.
-This approach has already paid off massive dividends:
+This approach has already paid massive dividends:
 
 \begin{itemize}
 \item When funding lines suddenly shifted we were able to painlessly transition from an on-premises facility to an Interim Data Facility on Google Cloud
@@ -184,7 +184,7 @@ Our architectural approach is geared towards lowering the cost for developing an
 Services utilize a common infrastructure (Phalanx\footnote{\url{http://phalanx.lsst.io/}}) providing services such as authentication and authorization, secrets management, Transport Layer Security (TLS) certificates, and templates to speed up creation of new services in the FastAPI framework.
 The GitOps infrastructure for K8S deployment using ArgoCD takes care of easy per-infrastructure configuration and deployment.
 
-On the summit in Cerro Pachón where we have on prem machines the Chile DevOps team use Foreman and puppet to bring up a full K8S infrastructure.
+On the summit in Cerro Pachón where we have on prem machines the Chile DevOps team use Foreman and Puppet to bring up a full K8S infrastructure.
 Both DM and Telescope and Site software then deploy services on top of this infrastructure.
 Deploying control components on K8S allows for better resilience.
 There are of course some devices for which this approach does not work.
@@ -194,14 +194,13 @@ There are of course some devices for which this approach does not work.
 We would like to share some observations from this project in a number of areas.
 \subsection{Standards}
 Standards are excellent they minimize the learning curve for new hires which is a major problem on all software projects.
-The European Cooperation for Space Standardization (ECSS) used for Gaia has been mentioned before \citep{2007arXiv0712.0249O} at ADASS.
+Gaia used the European Cooperation for Space Standardization (ECSS)\citep{2007arXiv0712.0249O} at ADASS and
  Rubin used Model Based System Engineering (MBSE) \citep{2018SPIE10705E..0US}.
 
 For astronomy we have also have the International Virtual Observatory (IVOA) standards. Gaia archive is full IVOA based \citep{2019ASPC..523..445S,2015scop.confE...8G}. The Sloane Digital Sky Survey (SDSS) implemented and helped define many of the original protocols \citep{2004AAS...20511301T}.
-Rubin is IVOA first implementing TAP and  HiPS,
+Rubin is IVOA first, we implement TAP and  HiPS,
 our Image services implements SODA.
-Rubin uses DataLink to abstract image access from ObsTAP results and
-some microservices  bounce TAP results into additional queries via DataLink descriptors.
+Rubin uses DataLink to abstract image access from ObsTAP results and it is further utilized within the system i.e. we do not just expose IVOA services we use them internally also.
 
 One upside of picking IVOA standards is that now there are many implementations available.
 Rubin uses the CADC's TAP implementation  with our own Qserv plugin.
@@ -210,134 +209,123 @@ That allows us to use Firefly for visualization fairly easily as it is
 fully VO based.
 
 \subsection{Architecture}
-There is a lot of analysis and design to come up with ans architecture - standards help with that lots of people use UML.
-Undoubtedly tools to support your chosen standards extremely useful in the beginning, later they may become cumbersome. Both Rubin and Gaia started out with Rational Architect and switched at some point to Magic Draw.
+There is a lot of analysis and design to come up with an architecture - standards help with that.
+Undoubtedly tools to support your chosen standards are extremely useful in the beginning, later they may become cumbersome. Both Rubin and Gaia started out with Rational Architect and switched at some point to Magic Draw.
 Rubin still maintains a full set of requirements and design elements in Magic Draw while Gaia switched to code as prime and reverse engineers some diagrams for documentation purposes.
 
-For verification  Rubin uses  Jira Test Manager \citep{2018SPIE10705E..0US}  while  Gaia  used an in house tracking system based on open software \citep{2012SPIE.8449E..0GC}.
+For verification  Rubin uses  Jira Test Manager \citep{2018SPIE10705E..0US}  while  Gaia  used an in house system based on open software \citep{2012SPIE.8449E..0GC}.
 A systematic and largely automated approach to verification is needed form the outset .
 
 One catch on both projects was to have clearly written and testable requirements, this is extremely difficult and neither project was stellar.
-This may be due to an underestimation of system engineering needs.
-We note that system engineering tends to not scale linearly with project size.
 We can easily fall in the trap of assuming that all agree on vague statements or requirements when usually a little delving will show quite the opposite.
-It is worth putting effort in early to write down in detail i and as precisely as possible how we think things will work.
+It is worth putting effort in early to write down in detail and as precisely as possible how we think things will work.
+This requires system engineering which is often underestimated.
 
 
-However you do your initial breakdown is possibly immaterial they all work and you will inevitably end up with $7 {{+}\over{-}} 2$ subsystems.
-You will end up with a a range of client server, model view controller, tiers, pipes and filters.
-If its big enough you end up with a bit of almost everything.
-Frequently large project start all subsystems together but
-a slower ramp up is better in some cases - think when you need things, admittedly it is  hard to keep politics out of that sort of decision.
-For Gaia Coordination Unit 1 ( CU1 Architecture) and CU3 (Astrometry) were concentrated on initially with others trailing by some months - people from other CUs were in CU1.
+However you do your initial breakdown is possibly immaterial they all work and you will inevitably end up with $7 \pm 2$ subsystems.
+You will end up with a a range of client server, model view controller, tiers, pipes and filters etc.
+Frequently large projects start all subsystems together but
+a slower ramp up is better in some cases, start subsystems when needed, admittedly it is  hard to keep politics out of that sort of decision.
+For Gaia Coordination Unit 1 ( CU1 Architecture) and CU3 (Astrometry) were concentrated on initially with others trailing by some months - people from other CUs formed part of CU1.
 CU9 (Gaia Archive ) was purposefully delayed to many years after the other parts of the project were almost built and launch was close.
 On Rubin all DM WBS elements started together
 some  teams were ready but others did not need their components  yet.
 It did lead to good involvement in developer guide and project management approach.
 
 
-
 \subsection{Documentation}
 It is highly recommended to have  a good document publishing and indexing system.
 Provide templates for standard documents early on to make it easy for people to follow the standards. Texmf is a good way to do this for \LaTeX.
-Most Gaia docs used Latex templates provided and were in SVN,  Livelink held PDFs and the search system worked to some extent.
-Metadata in Livelink was curated, not every one was allowed to upload documents.
+Most Gaia docs used the provided Latex templates and were in SVN while Livelink held the published PDFs and the Livelink search system worked to some extent.
+Metadata in Livelink was curated and only documentalists  were allowed to upload documents.
 
-Rubin developed a documentation infrastructure that further lowers the barrier to documentation by providing templated creation via Slack and uses the same IDE/toolchain developers use for coding, supports Restructured Text/Latex and is published via Github through the well-known GitOps workflow.
+Rubin developed a documentation infrastructure that further lowers the barrier to documentation by providing templated creation via Slack and uses the same IDE/toolchain developers use for coding, supports Restructured Text/\LaTeX and is published via Github.
 Single page documents (technotes) and site-based documentation (e.g. \url{ pipelines.lsst.io}) share the same infrastructure \citep{SQR-000} and search indexing hub (\url{www.lsst.io})
-This has also minimizes useful information being consigned in hard to find (e.g. Google docs) and easy to forget or edit in one’s preferred IDE (eg wikis)
-Docushare holds change controlled docs (PDFs, Word) has a search function though everyone has difficulty finding document in it.
+This has also minimizes useful information being consigned in hard to find (e.g. Google docs) and easy to forget or hard to edit in one’s preferred IDE (e.g. wikis) locations.
+Rubin Docushare holds change controlled docs (PDFs, Word), it has a search function though everyone has difficulty finding documents in it.
 This may be because the metadata is often incomplete or incorrect.
 
-Both Rubin and Gaia have  bibfile generation for all recorded docs : Gaia using   livelink is  complete. Rubin uses \url{lsst.io} incomplete.
-The Livelink API allowed the construction of the bibfile easily while we have failed to crack the Docushare API for Rubin plus the metadata is less than perfect.
+Both Rubin and Gaia have  bibfile generation for all recorded docs : Gaia using   livelink is  complete, Rubin using \url{lsst.io} is incomplete (since not all docs use that infrastructure).
+The Livelink API allowed the construction of the bibfile easily while we have failed to crack the Docushare API for Rubin, plus the Rubin metadata is less than perfect.
 
 Glossaries are good and it is great to start them early and get everyone using them.
-Both Rubin and Gaia also have tools to generate acronym lists from documents (text, or tex - not Word).\footnote{\url{http://gaia.esac.esa.int/gpdb/glossary.txt}, \url{https://www.lsst.org/scientists/glossary-acronyms}}
+Both Rubin and Gaia also have tools to generate acronym lists from documents (text, or tex - not Word).\footnote{\url{http://gaia.esac.esa.int/gpdb/glossary.txt}, \url{https://www.lsst.org/scientists/glossary-acronyms}}.  Gaia goes one step further with all constants use din docs and code stored in a single parameter database \citep{2005ESASP.576...67D}, that really requires work from the outset.
 
 
 \subsection{Interfaces}
-A core tenet : \emph{Separate the data model from the persistence mechanism}
-Algorithms should not access data directly.
-Butler is great for this in Rubin, it is  now used on SPHEREx also (\cite{2022SPIE12189E..11J} , \cite{2019ASPC..523..653J}, \cite{C24_adassxxxii}, \cite{P52_adassxxxii}).
+One of our core tenets is to \emph{separate the data model from the persistence mechanism}.
+Rubin Butler makes sure algorithms  never access data directly (\cite{2022SPIE12189E..11J} , \cite{2019ASPC..523..653J}, \cite{C24_adassxxxii}, \cite{P52_adassxxxii}).
 Felis holds the model in Yaml, Butler passes Python Objects to clients with algorithm code not knowing about data location or file formats.
 Similarly Gaia had data trains and the Main DataBase (MDB) dictionary which insulated algorithms from data access since the outset \citep{1999BaltA...8...57O}.
-For Gaia the MDB dictionary holds all data models  \citep{2015ASPC..495...47H, 2011ASPC..442..351O}
-
 
 Then there are the interfaces between systems and to others these are controlled by Interface Requirements Documents (IRD) and Interface Control Documents (ICD).
 These need system engineering and test plans from the outset.
-Rubin ICDs are really only IRDs .. but we may survive.
-For Gaia  we placed too much faith in data ICDs, it was insufficient and we had to do work later to make data transfers and processing work well.
-
-
+Rubin ICDs are really only IRDs .
+The Gaia MDB dictionary holds all data models  \citep{2015ASPC..495...47H, 2011ASPC..442..351O}and is the basis of the ICD between the subsystems.
+This was insufficient and we had to do work later to make data transfers and processing work well.
 
 \subsection{Products, repositories and technology stacks}
 Not all projects use product trees but they can be very useful.
 The Rubin product tree identified all  software products  and who is responsible for them in construction.
-This was good but infrequently updated (partially perhaps since it was in magic draw).It should help group packages into products and help dependencies.
-However on Rubin we have 100s of repos on GitHub, the dependencies are not straight forward and few are usable standalone.
-We pretty much need to build a complete set from source.
-So we have a Mono Build suited to a mono svn type repo but we have a package based set of GitHub repos.
-Clearly the latter is the correct pattern getting there is hard.
-The middleware has finally been made independent and put on PyPI which allowed SPHEREx to adopt it also.
+This was good but infrequently updated (partially perhaps since it was in magic draw).
+It should help group packages into products and help dependencies but
+on Rubin we have 100s of repos on GitHub, the dependencies are not straight forward and few are usable standalone.
+We pretty much need to build a complete set from source giving us a sort of
+ mono build but we have a package based set of GitHub repos.
+Clearly the latter is the correct pattern but getting cleanly defined buildable packages is hard.
 The use of Conda environments has allowed improvements but it started late and we have not been able to turn the tide.
-We did stop having patched versions for $3^{rd}$ party packages.
+We did stop having patched versions for $3^{rd}$ party packages at least.
+The middleware has  been made independent and put on PyPI which allowed SPHEREx to adopt it.
 
 Gaia has a huge SVN repo of everything based roughly on product tree.  Builds are done on parts of the SVN tree - dependencies strictly managed at jar level via Nexus.
-Middleware was extracted and put on PyPI.
 
 Printed out full product trees are impressive to see the amount of work to do and are useful at early reviews.
 
-Some of the software best practices are given in \citet{2018SPIE10707E..09J}.
+\noindent Some software best practices are given in \citet{2018SPIE10707E..09J}.
 
 \subsection{Deployment}
 As mentioned (Section \ref{sec:cloudnative}) we are cloud native on Rubin.
 Abstracting infrastructure effectively (Kubernetes / container orchestration, middleware etc) facilitates wider adoption of software and services by others, reducing context switching penalty and supporting continuing expertise.
-
-Rubin uses Foreman/Puppet for bare metal setup security injection etc. up to kubernetes. Some machines on the summit are not under kubernetes of course.
-We started late and SLAC were already using Chef and continue to do so - having both of these is unfortunate on one project.
-
-Rubin Docker Hub for containers Kubernetes  for orchestration even  on the summit, ArgoCD is used to deploy everything. The RSP is deployed at eight distinct locations using ArgoCD.
-
+At a low level DM uses Puppet but SLAC were already using Chef and continue to do so - having both of these is unfortunate on one project.
 
 Gaia choose Java for portability  (and ease of coding).
 There were no containers but Jars were always deployed from Nexus.
 All configurations for various machines were in SVN  deployment scripts pulled correct versions to a specific machine.
 
 \subsection{Databases}
-Some people love them and some people hate them some of us love them and hate them but datasets are a part of any big system and choosing the correct one is hard.
+Some people love them and some people hate them some of us love them and hate them but databases are a part of any big system and choosing the correct one is hard.
 We think databases are great for persistence, the ability to query in different ways and relational support for Atomicity, Consistency, Isolation, and Durability(ACID) .
 But there are problems with centralization/replication, schema evolution, performance cliffs.
-We have  difficulties with multi-user/multi-tenant systems.
+We have  difficulties with multi-user/multi-tenant systems but
 REST APIs in front help a lot.
 
-There is also a mistake often made of trying to use one single database -
+A mistake often made is trying to use one single database -
 more are better per-application databases, sometimes specialized (Redis, InfluxDB) add resilience and are more manageable nowadays.
 On Rubin we have Influx for summit Engineering, Postgres for observing logs and ancillary info and AlertsDB.
 We use Cassandra for Prompt Products and of course we have in house developed Qserv for catalog access \citep{C15_adassxxxii}.
-Gaia had at least Intersystems Cache for processing \cite{2011ExA....31..215O}, Postgres for archive and the dictionary .
+Gaia had at least Intersystems Cache for processing \cite{2011ExA....31..215O}, Postgres for archive and the dictionary.
 
 \subsection{Open software project management}
-It seems appropriate to mention management here though that could be a topic for a full paper or book of its own.
-In fact many insights may be found in \citet{OMULLANE2005}.
+It seems appropriate to mention management here though that could be a topic for a full paper or book of its own
+( many insights may be found in \citet{OMULLANE2005}).
 First we should be clear leadership is required for complex astronomy/software projects not just management.
 Finding good leaders is very hard.
 That requires domain expertise and management training
 We try to help by spreading some management across several people, exposing them to the issues in the large project and ways to deal with them.
 Most importantly provide support to potential managers/leaders.
-One must  acknowledge this route is not for everyone  - experimenting is good but give people a route back in a short timescale if they decide its not all they wanted.
+One must  acknowledge this route is not for everyone  - experimenting is good but give people a route back in a short timescale if they decide it is not what  they wanted.
 
 You can do agile but you probably want earned value \citep{2014SPIE.9150E..1EG,2016SPIE.9911E..0NK} to help understand what is being delivered and since NSF etc require it.
-Have good managers who understand both technical and managerial needs, super hard.
-Build a techno/scientific  culture in leadership, again not trivial.
-We should be offering opportunities for getting career credit for supporting the mission and its community, not just first-to-publish.
+You need to find good managers who understand both technical and managerial needs which is  super hard.
+Of course the aim is to build a techno/scientific  culture in leadership and bread more mangers of the required ilk and
+create community and collaboration around a codebase nurtured by those mangers.
+To help
+we should be offering opportunities for getting career credit for supporting the mission and its community, not just first-to-publish.
 
 There are lots of parties and institutes in big projects.
 If you want to do open source put it in the contracts/agreements from the outset.
 Licensing is important - Rubin picked GPL but would now prefer APL - hard to change
-so do not make it TOO explicit in the contracts.
-Create community activity and collaboration around a codebase if you can.
+so do not make it Too explicit in the contracts.
 
 
 
