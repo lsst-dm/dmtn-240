@@ -197,7 +197,7 @@ Standards are excellent they minimize the learning curve for new hires which is 
 Gaia used the European Cooperation for Space Standardization (ECSS)\citep{2007arXiv0712.0249O} at ADASS and
  Rubin used Model Based System Engineering (MBSE) \citep{2018SPIE10705E..0US}.
 
-For astronomy we have also have the International Virtual Observatory (IVOA) standards. Gaia archive is full IVOA based \citep{2019ASPC..523..445S,2015scop.confE...8G}. The Sloan Digital Sky Survey (SDSS) implemented and helped define many of the original protocols \citep{2004AAS...20511301T}.
+For astronomy we have also have the International Virtual Observatory (IVOA) standards. Gaia archive is full IVOA based \citep{2019ASPC..523..445S,2015scop.confE...8G}. The Sloan Digital Sky Survey (SDSS) implemented and helped define many of the original protocols \citep{2005ASPC..347..684T}.
 Rubin is IVOA first, we implement TAP and  HiPS,
 our Image services implements SODA.
 Rubin uses DataLink to abstract image access from ObsTAP results and it is further utilized within the system i.e. we do not just expose IVOA services we use them internally also.
@@ -254,7 +254,7 @@ Both Rubin and Gaia also have tools to generate acronym lists from documents (te
 
 \subsection{Interfaces}
 One of our core tenets is to \emph{separate the data model from the persistence mechanism}.
-Rubin Butler makes sure algorithms  never access data directly (\cite{2022SPIE12189E..11J} , \cite{2019ASPC..523..653J}, \cite{C24_adassxxxii}, \cite{P52_adassxxxii}).
+Rubin Butler makes sure algorithms  never access data directly \citep{2022SPIE12189E..11J,2019ASPC..523..653J,C24_adassxxxii,P52_adassxxxii}.
 Felis holds the model in Yaml, Butler passes Python Objects to clients with algorithm code not knowing about data location or file formats.
 Similarly Gaia had data trains and the Main DataBase (MDB) dictionary which insulated algorithms from data access since the outset \citep{1999BaltA...8...57O}.
 
