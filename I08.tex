@@ -137,12 +137,12 @@ Figure \ref{fig:drp} provides an event chart for this.
 Data rights holders will have access to the catalogs and images via the Rubin Science platform.
 The catalogs are large for relational databases; while the object catalog at $4 \times 10^{10}$ rows may be manageable,
 the source catalog (of all observations) will run to $10^{12}$ rows, which is beyond conventional relational technology.
-QServ \citep{C15_adassxxxii} was built specifically to answer astronomu queries quickly for large numbers of users.
-We have also tried non relational DBs including Google's BigQuery \citet[e.g.,][]{Document-31100} but QServ provides the best value for catalog queries.
+Qserv  \citep{C15_adassxxxii} was built specifically to answer astronomu queries quickly for large numbers of users.
+We have also tried non relational DBs including Google's BigQuery \citet[e.g.,][]{Document-31100} but Qserv  provides the best value for catalog queries.
 However, we see the advantage of non-relational technology for
-some \emph{unpredictable} and \emph{complex} access which QServ may or may not handle for user-defined functions, pattern matching, or unusual iteration schemes.
+some \emph{unpredictable} and \emph{complex} access which Qserv  may or may not handle for user-defined functions, pattern matching, or unusual iteration schemes.
 In fact many cloud tools work best with cloud formats like parquet and
- we are considering having parquet files along side QDerv for use with Spark or DASK.
+ we are considering having parquet files along side Qserv for use with Spark or DASK.
 
 A subset of data will be public via Education and Public Outreach, including for citizen science projects.
 The Alert stream itself will be fully public.
@@ -185,7 +185,7 @@ Rubin is IVOA first, with implementations of TAP, HiPS, and the SODA cutout serv
 Rubin uses DataLink to abstract image access from ObsTAP results and it is further utilized within the system such that we do not just expose IVOA services but we use them internally also.
 
 One upside of picking IVOA standards is that now there are many implementations available.
-Rubin uses the CADC's TAP implementation  with our own QServ plugin; users of the TAP service have no idea they are using QServ.
+Rubin uses the CADC's TAP implementation  with our own Qserv  plugin; users of the TAP service have no idea they are using Qserv .
 That allows us to use Firefly for visualization fairly easily as it is
 fully VO based.
 
@@ -282,7 +282,7 @@ REST APIs in front help a lot.
 A mistake often made is trying to use one single database --
 more are better and per-application databases, sometimes specialized (Redis, InfluxDB), add resilience and are more manageable nowadays.
 On Rubin we have InfluxDB for summit Engineering, Postgres for observing logs and ancillary info and AlertsDB.
-We use Cassandra for Prompt Products and of course we have in house developed QServ for catalog access \citep{C15_adassxxxii}.
+We use Cassandra for Prompt Products and of course we have in house developed Qserv  for catalog access \citep{C15_adassxxxii}.
 Gaia had at least Intersystems Cache for processing \citep{2011ExA....31..215O}, Postgres for archive and the dictionary.
 
 \subsection{Open software project management}
