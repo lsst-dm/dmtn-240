@@ -39,30 +39,33 @@
 %%    python $LSST_TEXMF_DIR/bin/db2authors.py --mode=adass > authors.tex
 
 
-\author{William~O'Mullane,$^1$ Frossie~Economou,$^1$ Kian-Tat~Lim,$^2$ Fritz~Mueller,$^2$ Tim~Jenness,$^1$ K.~Simon~Krughoff,$^1$ Leanne~P.~Guy,$^1$ Gregory~P.~Dubois-Felsmann,$^3$ and Ian~S.~Sullivan$^4$ }
-\affil{$^1$Vera C. Rubin Observatory, 950 N.\ Cherry Ave., Tucson, AZ  85719}
+\author{William~O'Mullane,$^1$ Frossie~Economou,$^1$ Kian-Tat~Lim,$^2$ Fritz~Mueller,$^2$ Tim~Jenness,$^1$ K.~Simon~Krughoff,$^1$ Leanne~P.~Guy,$^1$ Gregory~P.~Dubois-Felsmann,$^3$ Ian~S.~Sullivan,$^4$ and Yusra~AlSayyad$^5$ }
+\affil{$^1$Rubin Observatory Project Office, 950 N.\ Cherry Ave., Tucson, AZ  85719}
 \affil{$^2$SLAC National Accelerator Laboratory,  2575 Sand Hill Rd., Menlo Park, CA 94025}
 \affil{$^3$IPAC, California Institute of Technology, MS 100-22, Pasadena, CA 91125}
 \affil{$^4$University of Washington, Dept.\ of Astronomy, Box 351580, Seattle, WA 98195}
+\affil{$^5$Department of Astrophysical Sciences, Princeton University, Princeton, NJ 08544}
 \paperauthor{William~O'Mullane}{womullan@lsst.org}{0000-0003-4141-6195}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
 \paperauthor{Frossie~Economou}{}{0000-0002-8333-7615}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
-\paperauthor{Kian-Tat~Lim}{}{0000-0002-6338-6516}{SLAC National Accelerator Laboratory}{}{Menlo Park}{CA}{94025}{ USA}
-\paperauthor{Fritz~Mueller}{}{None}{SLAC National Accelerator Laboratory}{}{Menlo Park}{CA}{94025}{ USA}
+\paperauthor{Kian-Tat~Lim}{}{0000-0002-6338-6516}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
+\paperauthor{Fritz~Mueller}{}{None}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
 \paperauthor{Tim~Jenness}{}{0000-0001-5982-167X}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
 \paperauthor{K.~Simon~Krughoff}{}{0000-0002-4410-7868}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
 \paperauthor{Leanne~P.~Guy}{}{0000-0003-0800-8755}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
-\paperauthor{Gregory~P.~Dubois-Felsmann}{}{0000-0003-1598-6979}{IPAC}{}{Pasadena}{CA}{91125}{ USA}
-\paperauthor{Ian~S.~Sullivan}{}{0000-0001-8708-251X}{University of Washington}{}{Seattle}{WA}{98195}{ USA}
+\paperauthor{Gregory~P.~Dubois-Felsmann}{}{0000-0003-1598-6979}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
+\paperauthor{Ian~S.~Sullivan}{}{0000-0001-8708-251X}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
+\paperauthor{Yusra~AlSayyad}{}{None}{Rubin Observatory Project Office}{}{ Tucson}{AZ}{85719}{ USA}
 % Yes they said to have these index commands commented out.
-%\aindex{O'Mullane,~W.}
-%\aindex{Economou,~F.}
-%\aindex{Lim,~K.-T.}
-%\aindex{Mueller,~F.}
-%\aindex{Jenness,~T.}
-%\aindex{Krughoff,~K.~S.}
-%\aindex{Guy,~L.~P.}
-%\aindex{Dubois-Felsmann,~G.~P.}
-%\aindex{Sullivan,~I.~S.}
+%\aindex{O'Mullane,William}
+%\aindex{Economou,Frossie}
+%\aindex{Lim,Kian-Tat}
+%\aindex{Mueller,Fritz}
+%\aindex{Jenness,Tim}
+%\aindex{Krughoff,K.~Simon}
+%\aindex{Guy,Leanne~P.}
+%\aindex{Dubois-Felsmann,Gregory~P.}
+%\aindex{Sullivan,Ian~S.}
+%\aindex{AlSayyad,Yusra}
 
 \begin{abstract}
 We discuss design patterns and anti-patterns in astronomical software architecture and system design. We refer to our experience on several projects, such as Rubin Observatory, Gaia, SDSS, UKIRT, and JCMT, to highlight what worked and what did not.
@@ -113,7 +116,7 @@ Lowering the barrier to entry requires minimizing the investment (time, money, e
 Figure \ref{fig:arch} shows a simplified view of the system architecture. The full details are publicly available in \citep{LDM-148}. All the DM code is available on GitHub at \url{https://github.com/lsst}.
 
 \begin{centering}
-\articlefigure{I08_f1.eps}{fig:arch}{ Simplified Vera C. Rubin Architecture diagram from Magic Draw }
+\articlefigure[width={9.5cm}]{I08_f1.eps}{fig:arch}{ Simplified Vera C. Rubin Architecture diagram from Magic Draw }
 \end{centering}
 
 DM's work commences once the image is read out of the Camera. DM already gathers some information that the Camera software puts in the image header to make a minimally meaningful image.
@@ -136,7 +139,7 @@ Detailed information on the initial design and prototype in the Google Cloud env
 Figure \ref{fig:pp} provides a flow chart for prompt processing.
 
 \begin{centering}
-\articlefigure[width={6cm},angle=-90]{I08_f3.eps}{fig:pp}{ Prompt Processing flow diagram.}
+\articlefigure[width={5.5cm},angle=-90]{I08_f3.eps}{fig:pp}{ Prompt Processing flow diagram.}
 \end{centering}
 
 \subsection{Data Release Processing}\label{sec:DRP}
