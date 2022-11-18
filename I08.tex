@@ -51,260 +51,275 @@
 
 
 \begin{abstract}
-This paper covers some astronomy design patterns and perhaps some anti-patterns in astronomy. We will use our experience on several long projects such as Rubin Observatory, Gaia, SDSS,  UKIRT, and JCMT to highlight some of the the things which worked and a few things that did not work so well.
+We discuss design patterns and anti-patterns in astronomical software architecture and system design. We refer to our experience on several projects, such as Rubin Observatory, Gaia, SDSS, UKIRT, and JCMT, to highlight what worked and what did not.
 \end{abstract}
 
 %Slides on https://docs.google.com/presentation/d/1xCDWSaBNUEP-YM82K2-doM-yb0AKUGQExratsi3iFdA/edit#slide=id.g144caede871_0_0
 \section{Introduction}
 
-The Legacy Survey of Space and Time \citep{2019ApJ...873..111I} is a "deep fast wide" optical/near-IR survey of half the sky in \emph{ugrizy} bands to \emph{r} 27.5 (36\,nJy) based on 825 visits over a 10-year period.
-Carried out by the Vera C.\ Rubin Observatory on Cerro Pach\'{o}n (with an altitude of 2647\,m) in Chile, the survey will produce around 100\,PB of data consisting of about a billion 16\,Mpix images, enabling measurements for 40 billion objects.
+The Legacy Survey of Space and Time (LSST) \citep{2019ApJ...873..111I} is a ``wide fast deep'' optical/near-IR survey of half the sky in \emph{ugrizy} bands to a combined depth of \emph{r} $\sim$ 27.5 (36\,nJy) based on 825 visits over ten years.
+Carried out by the Vera C.\ Rubin Observatory (Rubin) on Cerro Pach\'{o}n (with an altitude of 2647\,m) in Chile, the survey will produce around 100\,PB of data consisting of about a billion 16\,Mpix images, enabling measurements for 40 billion objects.
+Rubin Observatory will take an image approximately every 40\,s (slew and settle time plus 30\,s exposure time), which leads to around 20\,TB of images streaming off the mountain from Chile each night.
+Rubin's LSST is not the first wide-field imaging survey, but the combination of depth, area, and throughput makes it uniquely challenging.
 
-The telescope mount assembly is due to be handed over by the end of 2022, and in 2023 the mirrors should be mounted with the commissioning camera (a single raft, about 5\% of the full camera size) to perform verification of the system.
-The observatory is due to go into full operations in 2024.
-We routinely operate the Rubin Auxiliary Telescope with the LATISS instrument as both an imager and spectrograph \citep{2020SPIE11452E..0UI}, the latter being its purpose in operations as a calibration aid.
-For regularly updated key milestones see \citet{DMTN-232}.
+The observatory is due to go into full operations in late 2024.
+In the meantime, we routinely operate the Rubin Auxiliary Telescope with the LSST Atmospheric Transmission Imager and Slitless Spectrograph (LATISS) instrument as both an imager and spectrograph \citep{2020SPIE11452E..0UI}.
+During regular operations, it will be used as a spectrograph to measure atmospheric transmission, but during construction, it has been used as an imager to integrate and commission the data management system.
+For regularly updated key milestones, see \citet{DMTN-232}.
+
+In this paper, we introduce the vision, architecture, and guiding values of the Rubin Data Management (DM) System. We then discuss some lessons learned building the DM system, including comparisons to other projects, primarily Gaia.
+
 
 \section{System Vision}
-The mission statement for Rubin Data Management (DM) is to ``Stand up operable, maintainable, quality services to deliver high-quality LSST data products for science and education, all on time and within reasonable cost.''
 
-Rubin Observatory will take an image approximately every 40\,s (slew and settle time plus 30\,s exposure time) which leads to around 20\,TB of images streaming off the mountain from Chile each night.
-The 100\,Gbps network from Chile to the USA was an early investment of the project which is now finally in place (though the redundant link still has some pending work).
-Using this network Rubin Data Management must get the images to SLAC within seven seconds and once at SLAC prompt processing commences (see Section \ref{sec:prompt}).
-After 80 hours images will be available to the data rights holders (see \citet{RDO-011} for more on data releases).
-On a roughly annual cadence DM will reprocess all the images taken since the start of operations and release new catalogs and other products as defined in \citet{LSE-163} (see Section \ref{sec:DRP}).
+The mission statement for Rubin Data Management (DM) is to ``Stand up operable, maintainable, quality services to deliver high-quality LSST data products for science and education, all on time and within reasonable cost.'' DM will deploy its software for producing and serving the data products, and the elements of the DM system include the following.
 
-Rubin's LSST is not the first wide-field imaging survey but the combination of depth, area, and throughput make it uniquely challenging.
-Everything is blended and many measurements are systematics limited, but
-we are already testing  on precursors like Hyper Suprime-Cam \citep[HSC;][]{2018PASJ...70S...5B}.
+DM will transfer the images from Chile to the US data facility, SLAC, within seven seconds by using the 100\,Gbps long-haul network, which was an early investment of the project.
+Once at SLAC, the images are processed in parallel through the prompt processing system (see Section \ref{sec:prompt}), which, within minutes, distributes alerts of astronomical sources which have moved, changed, or appeared.
+After 80 hours, the images will be available to the data rights holders.
+On a roughly annual cadence, DM will reprocess all the images taken since the start of operations and release new catalogs and other products as defined in \citet{LSE-163} (see Section \ref{sec:DRP}).
 
+%(see \citet{RDO-011} for more on data releases)
+%Everything is blended, and many measurements are systematics limited, but
+%we are already testing on precursors like Hyper Suprime-Cam \citep[HSC;][]{2018PASJ...70S...5B}.
 
 \subsection{Democratizing research in astronomy}
 
-We feel open-source software is key to open science: not just for traditional reproducibility arguments, but because it is a step toward inclusivity as
-open data alone is not enough.
-We must also find ways to support researchers who are resource-poor (do not have the compute resources associated with major research universities), time-poor (have a high teaching load, few/no grad students or postdocs), or who work in liberal arts colleges, historically black colleges, or other places that lack a large peer network for technical and research support.
+We will also serve these data products on the Rubin Science Platform.
+Because data at this volume does not fit on a laptop, we provide the infrastructure for researchers to bring their code to the data rather than the data to their code.
+Because the load is on our servers, users need only an internet connection and a browser to allow for sophisticated experimentation.
 
+In this way, the Rubin Science Platform provides a level playing field for interacting with Rubin data.
+Open-source software and open data are essential to open science and reproducibility. However, open data alone is not sufficient for inclusivity.
+We must also find ways to support researchers who are resource-poor (lacking the computing resources associated with major research universities), time-poor (have a high teaching load, few/no grad students or postdocs), or who work in liberal arts colleges, historically black colleges, or other places that lack an extensive peer network for technical and research support.
 Lowering the barrier to entry requires minimizing the investment (time, money, experience) necessary to meaningfully engage with the scientific questions that can be resolved with the data.
-As we move to operations we wish to provide a quality experience to all of our users and the Rubin Science Platform provides a level playing field for interacting with Rubin data.
-You do need an internet connection and a browser but the load is all on our servers, hence your institute does not need to have a super computer to allow sophisticated experimentation.
 
 \section{Architecture}
 
-Figure \ref{fig:arch} shows a simplified view of the system architecture, the full details are publicly available in \citep{LDM-148}. All the DM code is available on GitHub at \url{https://github.com/lsst}.
+Figure \ref{fig:arch} shows a simplified view of the system architecture. The full details are publicly available in \citep{LDM-148}. All the DM code is available on GitHub at \url{https://github.com/lsst}.
 
 \begin{centering}
-\articlefigure{I08_f1.eps}{fig:arch}{ Simplified  Vera C. Rubin Architecture diagram from Magic Draw }
+\articlefigure{I08_f1.eps}{fig:arch}{ Simplified Vera C. Rubin Architecture diagram from Magic Draw }
 \end{centering}
 
-DM's work commences once the image is read out of the Camera. DM already gathers some information which the Camera software puts in the image header to make a minimally meaningful image.
-As the data is written the Camera software also provides a quick look  of the image.
-Once available the image is written to the Observatory Operations Data Service (OODS) and simultaneously transferred to the US Data Facility (USDF) at SLAC via the Prompt Transfer System. Though we use Rucio for transfers between facilities we could not make it fast enough for the Prompt Transfer which is custom code.
-We will say a little more about prompt processing in Section \ref{sec:prompt}
+DM's work commences once the image is read out of the Camera. DM already gathers some information that the Camera software puts in the image header to make a minimally meaningful image.
+As the data is written, the Camera software also provides a quick look at the image.
+Once available, the image is written to the Observatory Operations Data Service (OODS) and simultaneously transferred to the US Data Facility (USDF) at SLAC via the Prompt Transfer System. Though we use Rucio for transfers between facilities, the Prompt Transfer System requires custom code to support faster transfers.
 
-On the summit there is a restricted access Science Platform which allows staff to interact with the images in the OODS directly.
-A cluster of about 400 cores is available for quick adhoc processing in situ, however, we expect most processing to be done at the USDF.
+On the summit, a restricted access Science Platform allows staff to interact with the images in the OODS directly.
+A cluster of about 400 cores is available for quick ad-hoc processing in situ, but we expect most processing to be done at the USDF.
 
 \subsection{Prompt Processing} \label{sec:prompt}
-The Prompt Processing framework runs at the USDF, though many of the components of the framework will be reused to drive rapid analysis and quick-look functionality at the Summit and test stand facilities.
-The design of Prompt Processing is driven be the requirement that alerts be distributed within 60 seconds of completion of readout of the last exposure of the visit.
+The Prompt Processing framework runs at the USDF. However, many of the framework's components will be reused to drive rapid analysis and quick-look functionality at the Summit and test stand facilities.
+The design of Prompt Processing is driven by the requirement that alerts be distributed within 120 seconds of completion of the readout of the last exposure of the visit.
 To enable as much I/O and computation as possible to be done in advance, we instantiate one process per CCD when the summit sends a next\_visit Kafka event.
 These next\_visit events provide notice of the telescope pointing, exposure duration, filter selection, and other metadata at least 20 seconds in advance of the first exposure of a visit.
 Upon receiving the next\_visit event, we use \texttt{knative} in a Kubernetes environment to prepare a new container where we connect to the Butler to pre-load reference catalogs, calibration products, templates, solar system ephemerides, and prior alert history.
-Once the raw images corresponding to an earlier next\_visit event for a given detector finish downloading to a local Ceph object store, the images are ingested to the container-local Butler and the Alert Production pipeline payload begins processing.
-Other payloads, such as the Commissioning pipelines or Calibration Products pipelines, can also be run using the framework.
-The Alert Production pipeline produces packaged alerts that are streamed to the Community Brokers, writes all data products to the repository at the USDF with the Butler, and updates the Alert Pipeline Database (APDB) with new measurements.
+Once the raw images corresponding to an earlier next\_visit event for a given detector finish downloading to a local Ceph object store, the images are ingested to the container-local Butler, and the Alert Production pipeline payload begins processing.
+%Other payloads, such as the Commissioning pipelines or Calibration Products pipelines, can also be run using the framework.
+The Alert Production pipeline produces packaged alerts streamed to the Community Brokers, writes all data products to the repository at the USDF with the Butler, and updates the Alert Pipeline Database (APDB) with new measurements.
 Detailed information on the initial design and prototype in the Google Cloud environment can be found in \citet{DMTN-219}.
-Figure \ref{fig:pp} provides flow chart for prompt processing.
+Figure \ref{fig:pp} provides a flow chart for prompt processing.
 
 \begin{centering}
-\articlefigure[width={4cm},angle=-90]{I08_f3.eps}{fig:pp}{ Prompt Processing flow diagram.}
+\articlefigure[width={6cm},angle=-90]{I08_f3.eps}{fig:pp}{ Prompt Processing flow diagram.}
 \end{centering}
 
 \subsection{Data Release Processing}\label{sec:DRP}
-About once per year we will reprocess all data from the start of the survey.
-We will spend a few months in precursor runs and QA before starting the nine month processing ordeal.
-The jobs for this are distributed between France, US and UK using PanDA \citep{DMTN-213}
-Figure \ref{fig:drp} provides an event chart for this.
+About once per year, we will reprocess all data from the start of the survey.
+We will spend a few months performing pilot runs and validation before starting the nine-month batch processing.
+Individual jobs are distributed between France, the US, and the UK data facilities using PanDA \citep{DMTN-213}
+The batch processing system is described by \citet{P52_adassxxxii} in more detail in this issue.
+The US data facility distributes the quantum graphs and raw images for execution at the three sites (figure \ref{fig:drp}).
+Copies of the resulting catalogs and processed images will be available from all three data facilities.
 
 \begin{centering}
-\articlefigure[width={6cm},angle=-90]{I08_f2.eps}{fig:drp}{ DRP event chart from Magic Draw }
+\articlefigure[width={6cm},angle=-90]{I08_f2.eps}{fig:drp}{Data Release Production event chart showing communication between the US, French, and UK data facilities (USDF, FrDF, and UKDF respectively). Butler repos are described by \citet{C24_adassxxxii}.}
 \end{centering}
 
 
 \subsection{Data Access} \label{sec:dataaccess}
 
 Data rights holders will have access to the catalogs and images via the Rubin Science platform.
-The catalogs are large for relational databases; while the object catalog at $4 \times 10^{10}$ rows may be manageable,
-the source catalog (of all observations) will run to $10^{12}$ rows, which is beyond conventional relational technology.
-Qserv  \citep{C15_adassxxxii} was built specifically to answer astronomu queries quickly for large numbers of users.
-We have also tried non relational DBs including Google's BigQuery \citet[e.g.,][]{Document-31100} but Qserv  provides the best value for catalog queries.
+Catalogs will be accessible via relational databases and column stores to support different access patterns.
+The object table contains the measurements that have utilized all the visits and is estimated at $4 \times 10^{10}$ rows.
+However, the ForcedSource table, which contains the lightcurves (one row for each observation of each object), will run to $10^{12}$ rows.
+Qserv \citep{C15_adassxxxii} was built specifically to answer astronomy queries quickly for large numbers of users.
+Because astronomers often ask for many rows, table scans are often unavoidable.
+Qserv's shared-nothing distributed architecture can serve multiple queries with single shared table scans.
+
+We have compared Qserv's performance to non-relational databases such as Google's BigQuery \citet[e.g.,][]{Document-31100} and column stores such as parquet.
+Qserv provides the best value for catalog queries.
 However, we see the advantage of non-relational technology for
-some \emph{unpredictable} and \emph{complex} access which Qserv  may or may not handle for user-defined functions, pattern matching, or unusual iteration schemes.
-In fact many cloud tools work best with cloud formats like parquet and
- we are considering having parquet files along side Qserv for use with Spark or DASK.
+some \emph{unpredictable} and \emph{complex} access that Qserv may or may not handle for user-defined functions, pattern matching, or unusual iteration schemes.
+For example, we expect users to compute a statistic on every lightcurve using a small number of columns.
+Many cloud tools, such as Spark and DASK, work best with column stores like parquet.
+Therefore, we plan to make parquet files available to serve this access pattern and as a backup for Qserv.
 
-A subset of data will be public via Education and Public Outreach, including for citizen science projects.
-The Alert stream itself will be fully public.
+%A subset of data will be public via Education and Public Outreach, including for citizen science projects.
+%The Alert stream itself will be fully public.
 
-We will hold most data at SLAC but run the science platform on Google \citep{2021arXiv211115030O}.
-We choose this Hybrid model since Compute is cheap on the cloud but storage is expensive.
-The ingress is free and the user egress is manageable.
+Because compute is cheap, but storage is expensive on the cloud, we have chosen a hybrid model.
+We will hold most data on premises at SLAC but run the science platform in the cloud \citep{2021arXiv211115030O}.
+The ingress is free, and the user egress is manageable.
 
-\subsection{Cloud Native}\label{sec:cloudnative}
-Like many projects \citep{2017ASPC..512...33O} Rubin leaned heavily on containers early on.
+\subsection{Cloud Native}
+\label{sec:cloudnative}
+Like many projects \citep{2017ASPC..512...33O}, Rubin leaned heavily on containers early on.
 We also quickly understood the need for sophisticated container orchestration and settled on Kubernetes (K8S).
 This decision drove service architectures that are well isolated from the underlying infrastructure.
 This approach has already paid massive dividends:
 
 \begin{itemize}
-\item When funding lines suddenly shifted we were able to painlessly transition from an on-premises facility to an Interim Data Facility on Google Cloud.
+\item When funding lines suddenly shifted, we were able to painlessly transition from an on-premises facility to an Interim Data Facility on Google Cloud.
 \item The Rubin Science Platform (RSP) became a generic data services platform that is currently deployed on eight distinct (and distinctly managed) infrastructures (on-prem and cloud).
-\item Cloud can now be freely leveraged for services, like the RSP, which benefit from its advantages such as elasticity, scalability, and isolation.
+\item Cloud can now be freely leveraged for services, like the RSP, which benefit from its advantages, such as elasticity, scalability, and isolation.
 \end{itemize}
 
-Our architectural approach is geared towards lowering the cost for developing and deploying a new data service.
-Services utilize a common infrastructure (Phalanx\footnote{\url{http://phalanx.lsst.io/}}) providing services such as authentication and authorization, secrets management, Transport Layer Security (TLS) certificates, and templates to speed up creation of new services in the FastAPI framework.
+Our architectural approach is geared towards lowering the cost of developing and deploying a new data service.
+Services utilize a common infrastructure (Phalanx\footnote{\url{http://phalanx.lsst.io/}}) providing services such as authentication and authorization, secrets management, Transport Layer Security (TLS) certificates, and templates to speed up the creation of new services in the FastAPI framework.
 The GitOps infrastructure for K8S deployment using ArgoCD takes care of easy per-infrastructure configuration and deployment.
 
-On the summit in Cerro Pach\'{o}n, where we have on-prem machines, the Chile DevOps team use Foreman and Puppet to bring up a full K8S infrastructure.
+On the summit in Cerro Pach\'{o}n, where we have on-prem machines, the Chile DevOps team uses Foreman and Puppet to bring up a full K8S infrastructure.
 Both DM and Telescope and Site software then deploy services on top of this infrastructure.
 Deploying control components on K8S allows for better resilience.
-There are of course some devices for which this approach does not work.
+%There are, of course, some devices for which this approach does not work.
 
 
 \section{Lessons learned}
-We would like to share some observations from this project in a number of areas.
+We would like to share some observations from this project in several areas.
 \subsection{Standards}
-Standards are excellent, they minimize the learning curve for new hires which is a major problem on all software projects.
+Standards are excellent. They minimize the learning curve for new hires, which is a major problem on all software projects.
 Gaia used the European Cooperation for Space Standardization \citep[ECSS;][]{2008ASPC..394..191O}, and
  Rubin used Model-Based Systems Engineering \citep[MBSE;][]{2018SPIE10705E..0US}.
 
-For astronomy we have also have the International Virtual Observatory (IVOA) standards. Gaia archive is fully IVOA based \citep{2019ASPC..523..445S,2015scop.confE...8G}, and the Sloan Digital Sky Survey (SDSS) implemented and helped define many of the original protocols \citep{2005ASPC..347..684T}.
+We also have the International Virtual Observatory (IVOA) standards for astronomy. Gaia archive is fully IVOA based \citep{2019ASPC..523..445S,2015scop.confE...8G}, and the Sloan Digital Sky Survey (SDSS) implemented and helped define many of the original protocols \citep{2005ASPC..347..684T}.
 Rubin is IVOA first, with implementations of TAP, HiPS, and the SODA cutout service.
-Rubin uses DataLink to abstract image access from ObsTAP results and it is further utilized within the system such that we do not just expose IVOA services but we use them internally also.
+Rubin uses DataLink to abstract image access from ObsTAP results, which is further utilized within the system to expose IVOA services and use them internally.
 
-One upside of picking IVOA standards is that now there are many implementations available.
-Rubin uses the CADC's TAP implementation  with our own Qserv  plugin; users of the TAP service have no idea they are using Qserv .
-That allows us to use Firefly for visualization fairly easily as it is
+One upside of picking IVOA standards is that many implementations are now available.
+Rubin uses the CADC's TAP implementation with our own Qserv plugin; users of the TAP service have no idea they are using Qserv.
+That allows us to use Firefly for visualization fairly easily, as it is
 fully VO based.
 
 \subsection{Architecture}
-There is a lot of analysis and design to come up with an architecture -- standards help with that.
-Undoubtedly tools to support your chosen standards are extremely useful in the beginning, later they may become cumbersome. Both Rubin and Gaia started out with Rational Architect and switched at some point to Magic Draw.
-Rubin still maintains a full set of requirements and design elements in Magic Draw while Gaia switched to code as prime and reverse engineers some diagrams for documentation purposes.
+There is a lot of analysis and design to develop an architecture -- standards help with that.
+Undoubtedly tools to support your chosen standards are handy in the beginning. Later they may become cumbersome. Both Rubin and Gaia started with Rational Architect and switched to Magic Draw.
+Rubin still maintains a complete set of requirements and design elements in Magic Draw, while Gaia switched to code as prime and reverse engineers some diagrams for documentation purposes.
 
-For verification  Rubin uses  Jira Test Manager \citep{2018SPIE10705E..0US}  while  Gaia  used an in-house system based on open software \citep{2012SPIE.8449E..0GC}.
-A systematic and largely automated approach to verification is needed from the outset.
+For verification, Rubin uses Jira Test Manager \citep{2018SPIE10705E..0US} while Gaia used an in-house system based on open software \citep{2012SPIE.8449E..0GC}.
+A systematic and automated approach to verification is needed from the outset.
 
-One catch on both projects was to have clearly written and testable requirements, this is extremely difficult and neither project was stellar.
-We can easily fall in the trap of assuming that all agree on vague statements or requirements when usually a little delving will show quite the opposite.
-It is worth putting effort in early to write down in detail and as precisely as possible how we think things will work.
-This requires systems engineering which is often underestimated.
+One difficulty on both projects was writing clear written and testable requirements. In hindsight, both projects could have done better.
+We can easily fall into the trap of assuming that all agree on vague statements or requirements when usually a little delving will show quite the opposite.
+It is worth putting in the effort early to write how we think things will work in detail and as precisely as possible.
+This precision requires systems engineering, which is often underestimated.
 
 
-How you do your initial breakdown is possibly immaterial, they all work and you will inevitably end up with $7 \pm 2$ subsystems.
-You will end up with a a range of client server, model view controller, tiers, pipes and filters etc.
-Frequently large projects start all subsystems together but
-a slower ramp up is better in some cases to start subsystems when needed; admittedly it is  hard to keep politics out of that sort of decision.
-For Gaia, Coordination Unit 1 (CU1 Architecture) and CU3 (Astrometry) were concentrated on initially with others trailing by some months -- people from other CUs formed part of CU1.
-CU9 (Gaia Archive) was purposefully delayed to many years after the other parts of the project were almost built and launch was close.
-On Rubin all DM WBS elements started together;
-some  teams were ready but others did not need their components  yet.
-It did lead to good involvement in the developer guide and project management approach.
+Regardless of the project, systems tend to be split up at the outset into  $7 \pm 2$ subsystems.
+Frequently large projects start all subsystems together, but often starting each subsystem as needed would work better.
+For example, on Gaia, Coordination Unit 1 (CU1 Architecture) and CU3 (Astrometry) were concentrated initially, with other Units trailing by some months.
+People from CU1 and CU3 could move to those other units.
+CU9 (Gaia Archive) was purposefully delayed until launch was close.
+On Rubin, all DM work breakdown structure elements started together.
+Not all components were needed initially.
+However, the simultaneous start led to good engagement, reflected in the developer guide and project management approach.
 
 
 \subsection{Documentation}
-It is highly recommended to have  a good document publishing and indexing system.
-Provide templates for standard documents early on to make it easy for people to follow the standards. Texmf is a good way to do this for \LaTeX.
-Most Gaia docs used the provided Latex templates and were in SVN while Livelink held the published PDFs and the Livelink search system worked to some extent.
-Metadata in Livelink was curated and only documentalists  were allowed to upload documents.
+We found that a good document publishing and indexing system is essential.
+We recommend providing templates for standard documents early on to make it easy for people to follow the standards. texmf works well for \LaTeX. Both Rubin and Gaia have "bibfile" generation for all recorded docs.
 
-Rubin developed a documentation infrastructure that further lowers the barrier to documentation by providing templated creation via Slack and uses the same IDE/toolchain developers use for coding, supports Restructured Text and \LaTeX, and is published via Github.
-Single page documents (tech notes) and site-based documentation (e.g., \url{https://pipelines.lsst.io}) share the same infrastructure \citep{SQR-000} and search indexing hub (\url{https://www.lsst.io}).
-This has also minimized useful information being consigned in hard to find (e.g., Google docs) and easy to forget or hard to edit in one's preferred IDE (e.g. wikis) locations.
-Rubin Docushare holds change controlled documents (PDFs, and Word), it has a search function though everyone has difficulty finding documents in it.
-This may be because the metadata is often incomplete or incorrect.
+Most Gaia docs used the provided Latex templates and were in SVN, while Livelink held the published PDFs, and the Livelink search system worked to some extent.
+Metadata in Livelink was curated, and only documentalists were allowed to upload documents.
+The Livelink API allowed for the easy construction of bibfiles.
 
-Both Rubin and Gaia have "bibfile" generation for all recorded docs: Gaia using Livelink is complete, Rubin using \url{https://lsst.io} is incomplete (since not all docs use that infrastructure).
-The Livelink API allowed the construction of the bibfile easily while we have failed to crack the Docushare API for Rubin, plus the Rubin metadata is less than perfect.
+Rubin developed a documentation infrastructure that further lowers the barrier to documentation by providing templated creation via bespoke Slackbot. It uses the same IDE/toolchain developers use for coding, supports Restructured Text and \LaTeX, and publishes via GitHub.
+Single page documents, technotes, and site-based documentation (e.g., \url{https://pipelines.lsst.io}) share the same infrastructure \citep{SQR-000} and search indexing hub (\url{https://www.lsst.io}).
+This system has made documents easy to find, remember and edit in one's preferred IDE.
+In contrast, the Rubin project beyond DM stores change-controlled documents (PDFs and Word) in Docushare, which has a search function that is difficult to use.
+Its frequent failure to find documents may be because it relies on metadata which is often incomplete or incorrect.  Furthermore, we failed to crack the Docushare API for the automatic generation of bibfiles.
 
-Glossaries are good and it is great to start them early and get everyone using them.
-Both Rubin and Gaia also have tools to generate acronym lists from documents (text, or tex -- not Word).\footnote{\url{http://gaia.esac.esa.int/gpdb/glossary.txt}, \url{https://www.lsst.org/scientists/glossary-acronyms}}.  Gaia goes one step further with all constants used in docs and code stored in a single parameter database \citep{2005ESASP.576...67D}, that really requires work from the outset.
+We also recommend building project glossaries early, maintaining them, and promoting their use.
+Both Rubin and Gaia also have tools to generate acronym lists from documents (text or tex -- not Word).\footnote{\url{http://gaia.esac.esa.int/gpdb/glossary.txt}, \url{https://www.lsst.org/scientists/glossary-acronyms}}. Gaia goes one step further with all constants used in docs and code stored in a single parameter database \citep{2005ESASP.576...67D}, which requires work from the outset.
 
 
 \subsection{Interfaces}
-One of our core tenets is to \emph{separate the data model from the persistence mechanism}.
-Rubin Butler makes sure algorithms never access data directly \citep{2022SPIE12189E..11J,2019ASPC..523..653J,C24_adassxxxii,P52_adassxxxii}.
-Felis holds the model in YAML, Butler passes Python Objects to clients with algorithm code not knowing about data location or file formats.
-Similarly Gaia had data trains and the Main DataBase (MDB) dictionary which insulated algorithms from data access since the outset \citep{1999BaltA...8...57O}.
+Rubin DM defines and maintains many interfaces.
+The first interface \emph{separates the data model from the persistence mechanism}, which implements one of our core tenets.
+The Rubin Butler ensures algorithms never access data directly \citep{2022SPIE12189E..11J,2019ASPC..523..653J,C24_adassxxxii,P52_adassxxxii}.
+%Felis holds the model in YAML.
+The Butler passes Python Objects to clients with algorithm code unaware of data location or file formats.
+Similarly, Gaia had data trains and the Main DataBase (MDB) dictionary, which insulated algorithms from data access since the outset \citep{1999BaltA...8...57O}.
 
-Then there are the interfaces between systems and to others; these are controlled by Interface Requirements Documents (IRD) and Interface Control Documents (ICD).
+The interfaces between systems and others are controlled by Interface Requirements Documents (IRD) and Interface Control Documents (ICD).
 These need system engineering and test plans from the outset.
-What Rubin calls ICDs are really only IRDs.
+What Rubin calls ICDs are only IRDs.
 The Gaia MDB dictionary holds all data models \citep{2015ASPC..495...47H, 2011ASPC..442..351O} and is the basis of the ICD between the subsystems.
-This was insufficient and we had to do work later to make data transfers and processing work well.
+This dictionary was insufficient, and we had to work later to make data transfers and processing work well.
 
 \subsection{Products, repositories and technology stacks}
 
-Not all projects use product trees but they can be very useful.
-The Rubin product tree identified all  software products  and who is responsible for them in construction.
-This was good but infrequently updated (partially perhaps since it was in MagicDraw).
-It should help group packages into products and help dependencies but
-on Rubin we have 100s of repos on GitHub, the dependencies are not straight forward, and few are usable standalone.
-We pretty much need to build a complete set from source giving us a sort of
- mono-build but we have a package-based set of GitHub repos.
-Clearly the latter is the correct pattern but getting cleanly defined buildable packages is hard.
-The use of Conda environments has allowed improvements but it started late and we have not been able to turn the tide.
-We did stop having patched versions for third-party packages by ensuring that corresponding packages existed in conda-forge.
-The middleware has  been made independent and put on PyPI which allowed SPHEREx to adopt it.
+Not all projects use product trees, but they can be very useful.
+The Rubin product tree identified all software products and who was responsible for them in construction.
+This product tree was good but infrequently updated (partially, perhaps, because it was in MagicDraw).
+The product tree should help group packages into products and clarify dependencies.
+However, on Rubin, we have hundreds of repos on GitHub, the dependencies are not straightforward, and few repos are usable as standalone packages.
+This means that we need to build a complete set from source, yielding a
+ mono-build.
+ While we have a package-based set of GitHub repos, which is the correct pattern, getting cleanly defined buildable packages has proved difficult.
+The use of Conda environments has allowed improvements, but it started late.
+We discontinued patched versions for third-party packages by ensuring that corresponding packages existed in conda-forge.
+The middleware has been made independent and put on PyPI, allowing other projects, such as SPHEREx, to adopt it.
 Some software best practices are given in \citet{2018SPIE10707E..09J}.
 
-Gaia has a huge SVN repo of everything based roughly on product tree.  Builds are done on parts of the SVN tree -- dependencies strictly managed at Jar level via Nexus.
-Printed out full product trees are impressive to see the amount of work to do and are useful at early reviews.
+Gaia has a huge SVN repo of everything based on the product tree. Builds are done on parts of the SVN tree -- dependencies strictly managed at Jar level via Nexus.
+Printed-out full product trees are impressive to see the amount of work to do and are useful at early reviews.
 
 \subsection{Deployment}
 As mentioned in \S\ref{sec:cloudnative} we are cloud-native on Rubin.
-Abstracting infrastructure effectively (Kubernetes / container orchestration, middleware etc) facilitates wider adoption of software and services by others, reducing context switching penalty and supporting continuing expertise.
-At a low level DM uses Puppet but SLAC were already using Chef and continue to do so -- having both of these is unfortunate on one project.
+Abstracting infrastructure effectively (Kubernetes / container orchestration, middleware) facilitates wider adoption of software and services by others, reducing context-switching penalties and supporting continuing expertise.
+At a low level, DM uses Puppet, but SLAC was already using Chef and continue to do so --using both of these is unfortunate on one project.
 
 Gaia chose Java for portability and ease of coding.
-There were no containers but Jars were always deployed from Nexus.
-All configurations for various machines were in SVN  deployment scripts pulled correct versions to a specific machine.
+There were no containers, but Jars were always deployed from Nexus.
+All configurations for various machines were in SVN deployment scripts that pulled the correct versions to a specific machine.
 
 \subsection{Databases}
-Some people love them and some people hate them, some of us love them and hate them but databases are a part of any big system and choosing the correct one is hard.
-We think databases are great for persistence, the ability to query in different ways and relational support for Atomicity, Consistency, Isolation, and Durability (ACID).
-But there are problems with centralization/replication, schema evolution, and performance cliffs.
-We have  difficulties with multi-user/multi-tenant systems but
-REST APIs in front help a lot.
+Some people love them, and some people hate them, some of us love them and hate them, but databases are a part of any big system, and choosing the correct one is hard.
+We think databases are great for persistence, the ability to query in different ways, and relational support for Atomicity, Consistency, Isolation, and Durability (ACID).
+Nevertheless, there are problems with centralization/replication, schema evolution, and performance cliffs.
+We have difficulties with multi-user/multi-tenant systems but
+REST APIs in front helps a lot.
 
-A mistake often made is trying to use one single database --
-more are better and per-application databases, sometimes specialized (Redis, InfluxDB), add resilience and are more manageable nowadays.
-On Rubin we have InfluxDB for summit Engineering, Postgres for observing logs and ancillary info and AlertsDB.
-We use Cassandra for Prompt Products and of course we have in house developed Qserv  for catalog access \citep{C15_adassxxxii}.
-Gaia had at least Intersystems Cache for processing \citep{2011ExA....31..215O}, Postgres for archive and the dictionary.
+A common mistake is trying to use one single database.
+More is better, and per-application databases, sometimes specialized (Redis, InfluxDB), add resilience and are more manageable nowadays.
+On Rubin, we have InfluxDB for summit Engineering, Postgres for observing logs and ancillary info, and AlertsDB.
+
+We use Cassandra for Prompt Products, and of course, we have developed Qserv in-house for catalog access \citep{C15_adassxxxii}.
+Gaia had at least Intersystems Cache for processing \citep{2011ExA....31..215O}, Postgres for archive, and the dictionary.
 
 \subsection{Open software project management}
 It seems appropriate to mention management here though that could be a topic for a full paper or book of its own
 (many insights may be found in \citet{OMULLANE2005}).
-First we should be clear leadership is required for complex astronomy/software projects, not just management.
-Finding good leaders is very hard and that requires domain expertise and management training.
-We try to help by spreading some management across several people, exposing them to the issues in the large project and ways to deal with them.
+First, leadership is required for complex astronomy/software projects, not just management.
+Finding good leaders is very hard, requiring domain expertise and management training.
+We help by spreading some management across several people, exposing them to the issues in the large project and ways to deal with them.
 Most importantly, provide support to potential managers/leaders.
-One must  acknowledge this route is not for everyone  -- experimenting is good but give people a route back in a short timescale if they decide it is not what  they wanted.
+One must acknowledge that this route is not for everyone -- experimenting is good but gives people a route back in a short timescale if they decide it is not what they wanted.
 
-You can do Agile but you probably want earned value \citep{2014SPIE.9150E..1EG,2016SPIE.9911E..0NK} to help understand what is being delivered and since NSF and other agencies require it.
-You need to find good managers who understand both technical and managerial needs which is  super hard.
-Of course the aim is to build a techno/scientific  culture in leadership and breed more managers of the required ilk and
-create community and collaboration around a codebase nurtured by those mangers.
+While it is possible to do Agile, the NSF and other agencies require earned value \citep{2014SPIE.9150E..1EG,2016SPIE.9911E..0NK} to help understand what is being delivered.
+We recommend finding good managers who understand technical and managerial needs, which is difficult.
+Of course, the aim is to build a techno/scientific culture in leadership and breed more managers of the required ilk and
+create community and collaboration around a codebase nurtured by those managers.
 To help
 we should be offering opportunities for getting career credit for supporting the mission and its community, not just first-to-publish.
 
-There are lots of parties and institutes in big projects.
-If you want to do open source put it in the contracts/agreements from the outset.
-Licensing is important, Rubin picked GPL but would now prefer a less restrictive license -- it's hard to change
-so do not make it too explicit in the contracts.
+Running a big project also requires many agreements with institutions.
+To build open-source software, we recommend putting it in the contracts/agreements from the outset but without being overly explicit about the license.
+Licensing is important.
+Rubin picked GPL at the outset but now prefers a less restrictive license.
+We have found it very hard to change at this stage. .
 
 \acknowledgments This material or work is supported in part by the National Science Foundation through Cooperative Agreement AST-1258333 and Cooperative Support Agreement AST1836783 managed by the Association of Universities for Research in Astronomy (AURA), and the Department of Energy under Contract No. DE-AC02-76SF00515 with the SLAC National Accelerator Laboratory managed by Stanford University.
 
