@@ -14,7 +14,7 @@ export TEXMFHOME = lsst-texmf/texmf
 #$(DOCNAME).pdf: $(tex) meta.tex O3-002.bib authors.tex acronyms.tex
 #	latexmk -bibtex -xelatex -f $(DOCNAME)
 
-I08.pdf: $(tex) $(DOCNAME).bib 
+I08.pdf: $(tex) $(DOCNAME).bib authors.tex
 	latex $(DOCNAME)
 	bibtex $(DOCNAME)
 	latex $(DOCNAME)
@@ -27,7 +27,7 @@ acronyms.tex: $(tex) myacronyms.txt
 	$(TEXMFHOME)/../bin/generateAcronyms.py -t "DM" $(tex)
 
 # Remove the USA from the author list since that can be assumed
-authors.tex:  authors.yaml
+authors.tex:  authors.yaml lsst-texmf
 	python3 $(TEXMFHOME)/../bin/db2authors.py --mode adass > authors.tex
 	perl -pi -e 's|, USA||' authors.tex
 
